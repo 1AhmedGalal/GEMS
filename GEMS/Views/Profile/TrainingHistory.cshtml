@@ -1,0 +1,46 @@
+﻿@model GEMS.ViewModels.ProfileViewModels.TrainingHistoryViewModel
+
+@{
+    ViewData["Title"] = "Training History";
+}
+
+<div class="container mt-5" style="color: #1e113a;">
+    <div class="text-center mb-4">
+        <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 5px;">
+            Training History for @Model.Username
+        </h2>
+    </div>
+
+    @if (Model.Exercises.Any())
+    {
+        <div class="table-responsive shadow rounded" style="background-color: var(--primary-color);">
+            <table class="table table-bordered" style="color: var(--tertiary-color);">
+                <thead style="background-color: var(--secondary-color); color: var(--primary-color);">
+                    <tr>
+                        <th>Exercise</th>
+                        <th>Reps</th>
+                        <th>Mistakes</th>
+                        <th>Weight Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exercise in Model.Exercises)
+                    {
+                        <tr>
+                            <td>@exercise.ExerciseName</td>
+                            <td>@exercise.TotalRepsPlayed</td>
+                            <td>@exercise.TotalMistakesMade</td>
+                            <td>@exercise.WeightUsed kg</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert text-center shadow p-3 rounded" style="background-color: var(--accent-color); color: var(--primary-color);">
+            No training history found. Start exercising to track your progress!
+        </div>
+    }
+</div>

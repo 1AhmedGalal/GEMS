@@ -1,0 +1,64 @@
+﻿@model GEMS.ViewModels.UserViewModels.UserLoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="shadow-lg p-4 rounded" style="background-color: var(--primary-color); color: var(--tertiary-color);">
+
+                <h2 class="text-center mb-3" style="color: var(--tertiary-color);">Login to Your Account</h2>
+                <hr style="border-top: 2px solid var(--accent-color);" />
+
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="control-label" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Email" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="control-label" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Password" type="password" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" style="border-color: var(--accent-color);" />
+                        <label asp-for="RememberMe" class="form-check-label" style="color: var(--tertiary-color);">Remember me</label>
+                    </div>
+
+                    <div class="form-group d-grid mb-3">
+                        <button type="submit" class="btn btn-lg" style="background-color: var(--accent-color); color: var(--primary-color); border-color: var(--accent-color);">
+                            Login
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        
+                        <p>
+                            Don't have an account? <a asp-action="Register" style="color: var(--accent-color); text-decoration: none;">Register here</a>
+                        </p>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

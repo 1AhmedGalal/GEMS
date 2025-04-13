@@ -1,0 +1,103 @@
+﻿@model GEMS.ViewModels.UserViewModels.UserRegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="shadow-lg p-4 rounded" style="background-color: var(--primary-color); color: var(--tertiary-color);">
+                <h2 class="text-center mb-3" style="color: var(--tertiary-color);">Create a New Account</h2>
+                <hr style="border-top: 2px solid var(--accent-color);" />
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Username" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Username" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Email" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Password" type="password" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ConfirmedPassword" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="ConfirmedPassword" type="password" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="ConfirmedPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" style="color: var(--tertiary-color);"></label>
+                            <input asp-for="FirstName" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" style="color: var(--tertiary-color);"></label>
+                            <input asp-for="LastName" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="BirthDate" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="BirthDate" type="date" class="form-control"
+                               max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               min="1950-01-01"
+                               style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Weight" style="color: var(--tertiary-color);"></label>
+                            <input asp-for="Weight" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                            <span asp-validation-for="Weight" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Height" style="color: var(--tertiary-color);"></label>
+                            <input asp-for="Height" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                            <span asp-validation-for="Height" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" style="border-color: var(--accent-color);" />
+                        <label asp-for="RememberMe" class="form-check-label" style="color: var(--tertiary-color);"></label>
+                    </div>
+
+                    <div class="form-group d-grid mb-3">
+                        <button type="submit" class="btn btn-lg" style="background-color: var(--accent-color); color: var(--primary-color); border-color: var(--accent-color);">
+                            Register
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p>
+                        Already have an account?
+                        <a asp-action="Login" style="color: var(--accent-color); text-decoration: none;">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
