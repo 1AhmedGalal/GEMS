@@ -113,6 +113,10 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Exercise" asp-action="LiveSquat">Start Training</a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="TrainingHistory">Training History</a>
                             </li>
 

@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "Squat Tracker";
+    Layout = null; // remove if you're using a shared layout
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Squat Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        .status {
+            font-size: 24px; /* Increased font size for better visibility */
+            margin-top: 30px;
+            background-color: #fff;
+            display: inline-block;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            width: 70%;
+            text-align: left; /* Align text to the left for better readability */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .frame-container {
+            margin-top: 40px;
+            max-height: 800px; /* Max height for the live frame */
+            overflow: hidden; /* Hide overflow if the frame exceeds max-height */
+        }
+
+        img {
+            max-width: 80%;
+            height: auto;
+            border: 2px solid #333;
+        }
+
+        .back-btn, .stop-btn {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .stop-btn {
+            background-color: #f44336; /* Red color for stop button */
+        }
+
+            .stop-btn:hover {
+                background-color: #e53935;
+            }
+
+        .back-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Squat Tracker Live Feed</h2>
+
+    <!-- Status Box -->
+    <div class="status" id="statusText">Loading...</div>
+
+    <!-- Live Frame -->
+    <div class="frame-container">
+        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    </div>
+
+    <!-- Back to Home Button -->
+    <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
+
+
+    <script>
+        window.onload = () => {
+            startFlask();
+            setInterval(fetchStatus, 50); // Update every 50ms for smoother feed
+        };
+
+        async function startFlask() {
+            try {
+                await fetch("/Exercise/Squat", { method: "POST" });
+            } catch (err) {
+                console.error("Failed to start Flask backend:", err);
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/status");
+                const data = await response.json();
+
+                console.log("Received:", data); // helpful for debugging
+
+                if (data.frame) {
+                    document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
+                }
+
+                document.getElementById("statusText").innerText =
+                    `Reps: ${data.counter}, Stage: ${data.stage ?? "N/A"}, Error: ${data.error ?? "None"}`;
+            } catch (err) {
+                console.error("Error fetching status:", err);
+            }
+        }
+
+        async function handleBackToHome() {
+            stopSquat().then(() => {
+                window.location.href = '/Home/Index';
+            });
+        }
+
+        async function stopSquat() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/start", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ trigger: "stop" })
+                });
+
+                const data = await response.json();
+                console.log(data); // To check if the stop was successful
+
+                
+            } catch (err) {
+                console.error("Error stopping squat tracking:", err);
+            }
+        }
+    </script>
+</body>
+</html>

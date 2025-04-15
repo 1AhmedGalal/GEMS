@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\ExersiceViewModels\" />
-    <Folder Include="Views\Exercise\" />
   </ItemGroup>
 
 </Project>
