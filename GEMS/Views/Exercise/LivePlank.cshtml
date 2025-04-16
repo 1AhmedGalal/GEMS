@@ -1,13 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Squat Tracker";
-    Layout = null; // remove if you're using a shared layout
+    ViewBag.Title = "Plank Tracker";
+    Layout = null;
 }
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Squat Tracker</title>
+    <title>Plank Tracker</title>
     <style>
         :root {
             --primary-color: #1e113a;
@@ -41,6 +41,7 @@
             width: 70%;
             text-align: left;
             font-weight: bold;
+            white-space: pre-line;
         }
 
         .frame-container {
@@ -85,7 +86,7 @@
     </style>
 </head>
 <body>
-    <h2>Squat Tracker Live Feed</h2>
+    <h2>Plank Tracker Live Feed</h2>
 
     <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
@@ -99,14 +100,29 @@
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
+        let startTime = Date.now();
+        let elapsedSeconds = 0;
+
+        function updateTimer() {
+            elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${secs}`;
+        }
+
         window.onload = () => {
+            startTime = Date.now();
             startFlask();
-            setInterval(fetchStatus, 50); // Update every 50ms for smoother feed
+            setInterval(fetchStatus, 100); // smoother frame updates
+            setInterval(updateTimer, 1000); // update timer every second
         };
 
         async function startFlask() {
             try {
-                await fetch("/Exercise/Squat", { method: "POST" });
+                await fetch("/Exercise/Plank", { method: "POST" });
             } catch (err) {
                 console.error("Failed to start Flask backend:", err);
             }
@@ -117,26 +133,25 @@
                 const response = await fetch("http://127.0.0.1:5000/status");
                 const data = await response.json();
 
-                console.log("Received:", data);
-
                 if (data.frame) {
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
                 document.getElementById("statusText").innerText =
-                    `Reps: ${data.counter}, Stage: ${data.stage ?? "N/A"}, Error: ${data.error ?? "None"}`;
+                    `Feedback: ${data.plank_feedback ?? "Waiting..."}\n` +
+                    `Confidence: ${data.plank_confidence?.toFixed(2) ?? "N/A"} | Time: ${formatTime(elapsedSeconds)}`;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
 
         async function handleBackToHome() {
-            stopSquat().then(() => {
+            stopPlank().then(() => {
                 window.location.href = '/Home/Index';
             });
         }
 
-        async function stopSquat() {
+        async function stopPlank() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -149,7 +164,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping squat tracking:", err);
+                console.error("Error stopping plank tracking:", err);
             }
         }
     </script>

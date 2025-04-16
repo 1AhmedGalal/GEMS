@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Countdown";
+    int id = ViewBag.Id;
+}
+
+<h2>Starting in <span id="countdown">5</span> seconds...</h2>
+
+<script>
+    let seconds = 5;
+    let countdownElement = document.getElementById("countdown");
+
+    let timer = setInterval(function () {
+        seconds--;
+        countdownElement.textContent = seconds;
+
+        if (seconds <= 0) {
+            clearInterval(timer);
+            // Redirect based on condition
+            if (@id === 0) {
+                window.location.href = '@Url.Action("LiveClassification", "Exercise")';
+            } else if (@id === 1) {
+                window.location.href = '@Url.Action("LiveSquat", "Exercise")'; // fallback example
+            } else if (@id === 2) {
+                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+            } else if (@id === 3) {
+                window.location.href = '@Url.Action("LivePlank", "Exercise")'; // fallback example
+            } else if (@id === 4) {
+                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+            } else if (@id === 5) {
+                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+            } else if (@id === 6) {
+                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+            }
+
+        }
+    }, 1000);
+</script>

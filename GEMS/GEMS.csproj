@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\ExersiceViewModels\" />
+    <Folder Include="wwwroot\photos\" />
   </ItemGroup>
 
 </Project>

@@ -1,147 +1,64 @@
-﻿@{
-    ViewBag.Title = "Squat Tracker";
-    Layout = null; // Remove if you're using a shared layout
+﻿@model GEMS.ViewModels.UserViewModels.UserLoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Squat Tracker</title>
-    <style>
-        /* Define your color variables */
-        :root {
-            --primary-color: #2a9d8f; /* Example Primary Color */
-            --accent-color: #e9c46a; /* Example Accent Color */
-            --tertiary-color: #264653; /* Example Tertiary Color */
-            --background-color: #f5f5f5;
-            --box-shadow-color: rgba(0, 0, 0, 0.2);
-        }
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="shadow-lg p-4 rounded" style="background-color: var(--primary-color); color: var(--tertiary-color);">
 
-        body {
-            font-family: Arial, sans-serif;
-            background: var(--background-color);
-            color: var(--tertiary-color);
-            margin: 0;
-            padding: 20px;
-        }
+                <h2 class="text-center mb-3" style="color: var(--tertiary-color);">Login to Your Account</h2>
+                <hr style="border-top: 2px solid var(--accent-color);" />
 
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-        .status {
-            font-size: 24px;
-            margin-top: 30px;
-            background-color: #fff;
-            display: inline-block;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 10px var(--box-shadow-color);
-            width: 100%;
-            text-align: left;
-            font-weight: bold;
-            color: var(--tertiary-color);
-        }
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
 
-        .frame-container {
-            margin-top: 40px;
-            max-height: 500px;
-            overflow: hidden;
-            text-align: center;
-        }
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="control-label" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Email" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
 
-        img {
-            max-width: 100%;
-            height: auto;
-            border: 2px solid #333;
-            border-radius: 8px;
-        }
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="control-label" style="color: var(--tertiary-color);"></label>
+                        <input asp-for="Password" type="password" class="form-control" style="border-color: var(--accent-color); background-color: #fffef7;" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
 
-        .back-btn {
-            margin-top: 30px;
-            padding: 10px 20px;
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+                    <div class="form-group form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" style="border-color: var(--accent-color);" />
+                        <label asp-for="RememberMe" class="form-check-label" style="color: var(--tertiary-color);">Remember me</label>
+                    </div>
 
-            .back-btn:hover {
-                background-color: darken(var(--accent-color), 10%);
-            }
+                    <div class="form-group d-grid mb-3">
+                        <button type="submit" class="btn btn-lg" style="background-color: var(--accent-color); color: var(--primary-color); border-color: var(--accent-color);">
+                            Login
+                        </button>
+                    </div>
 
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
+                    <div class="text-center mt-3">
+                        
+                        <p>
+                            Don't have an account? <a asp-action="Register" style="color: var(--accent-color); text-decoration: none;">Register here</a>
+                        </p>
+                    </div>
+                </form>
 
-        hr {
-            border-top: 2px solid var(--accent-color);
-        }
-
-        .back-btn-container {
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Squat Tracker Live Feed</h2>
-        <hr />
-
-        <!-- Status Box -->
-        <div class="status" id="statusText">Loading...</div>
-
-        <!-- Live Frame -->
-        <div class="frame-container">
-            <img id="liveFrame" src="" alt="Live frame not loaded" />
-        </div>
-
-        <!-- Back to Home Button -->
-        <div class="back-btn-container">
-            <button class="back-btn" onclick="window.location.href='/Home/Index'">Back to Home</button>
+            </div>
         </div>
     </div>
-
-    <script>
-        window.onload = () => {
-            startFlask();
-            setInterval(fetchStatus, 50);
-        };
-
-        async function startFlask() {
-            try {
-                await fetch("/Exercise/Squat", { method: "POST" });
-            } catch (err) {
-                console.error("Failed to start Flask backend:", err);
-            }
-        }
-
-        async function fetchStatus() {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/status");
-                const data = await response.json();
-
-                console.log("Received:", data); // helpful for debugging
-
-                if (data.frame) {
-                    document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
-                }
-
-                document.getElementById("statusText").innerText =
-                    `Reps: ${data.counter}, Stage: ${data.stage ?? "N/A"}, Error: ${data.error ?? "None"}`;
-            } catch (err) {
-                console.error("Error fetching status:", err);
-            }
-        }
-    </script>
-</body>
-</html>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

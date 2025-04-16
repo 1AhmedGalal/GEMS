@@ -245,6 +245,10 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\photos\\body.jpeg",
+      "PackagePath": "staticwebassets\\photos\\body.jpeg"
+    },
+    {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.GEMS.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

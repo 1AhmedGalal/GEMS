@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Squat Tracker";
+    ViewBag.Title = "Exercise Classification";
     Layout = null; // remove if you're using a shared layout
 }
 
@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Squat Tracker</title>
+    <title>Exercise Classification</title>
     <style>
         :root {
             --primary-color: #1e113a;
@@ -85,7 +85,7 @@
     </style>
 </head>
 <body>
-    <h2>Squat Tracker Live Feed</h2>
+    <h2>Exercise Classification Live Feed</h2>
 
     <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
@@ -100,15 +100,15 @@
 
     <script>
         window.onload = () => {
-            startFlask();
+            startClassification();
             setInterval(fetchStatus, 50); // Update every 50ms for smoother feed
         };
 
-        async function startFlask() {
+        async function startClassification() {
             try {
-                await fetch("/Exercise/Squat", { method: "POST" });
+                await fetch("/Exercise/Classification", { method: "POST" });
             } catch (err) {
-                console.error("Failed to start Flask backend:", err);
+                console.error("Failed to start Flask classification backend:", err);
             }
         }
 
@@ -119,24 +119,46 @@
 
                 console.log("Received:", data);
 
+                if (data.prediction === "BodyWeightSquats") {
+                    await stopModels();
+                    window.location.href = '/Exercise/LiveSquat';
+                }
+
                 if (data.frame) {
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
                 document.getElementById("statusText").innerText =
-                    `Reps: ${data.counter}, Stage: ${data.stage ?? "N/A"}, Error: ${data.error ?? "None"}`;
+                    `Prediction: ${data.prediction ?? "N/A"}, Confidence: ${data.confidence ?? "N/A"}`;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
 
+        async function stopModels() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/start", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ trigger: "stop" })
+                });
+
+                const data = await response.json();
+                console.log("Stop response:", data);
+            } catch (err) {
+                console.error("Error stopping squat tracking:", err);
+            }
+        }
+
         async function handleBackToHome() {
-            stopSquat().then(() => {
+            stopClassification().then(() => {
                 window.location.href = '/Home/Index';
             });
         }
 
-        async function stopSquat() {
+        async function stopClassification() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -149,7 +171,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping squat tracking:", err);
+                console.error("Error stopping classification tracking:", err);
             }
         }
     </script>
