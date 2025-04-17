@@ -47,7 +47,7 @@ namespace GEMS.Controllers
                 ExerciseName = _exerciseRepository.GetById(ue.ExerciseId)?.Name ?? "Unknown Exercise",
                 TotalRepsPlayed = ue.TotalRepsPlayed,
                 TotalMistakesMade = ue.TotalMistakesMade,
-                WeightUsed = ue.WeightUsed,
+                DateTime = ue.DateTime,
             }).ToList();
 
             var viewModel = new TrainingHistoryViewModel
@@ -58,5 +58,6 @@ namespace GEMS.Controllers
 
             return View(viewModel);
         }
+
     }
 }

@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Exercise Classification";
-    Layout = null; // remove if you're using a shared layout
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -35,12 +35,13 @@
             background-color: var(--tertiary-color);
             color: var(--primary-color);
             display: inline-block;
-            padding: 20px 30px;
+            padding: 30px 40px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
             width: 70%;
-            text-align: left;
+            text-align: center;
             font-weight: bold;
+            white-space: pre-line;
         }
 
         .frame-container {
@@ -88,7 +89,7 @@
     <h2>Exercise Classification Live Feed</h2>
 
     <!-- Status Box -->
-    <div class="status" id="statusText">Loading...</div>
+    <div class="status" id="statusText">Please start doing the exercise.</div>
 
     <!-- Live Frame -->
     <div class="frame-container">
@@ -101,7 +102,7 @@
     <script>
         window.onload = () => {
             startClassification();
-            setInterval(fetchStatus, 50); // Update every 50ms for smoother feed
+            setInterval(fetchStatus, 50);
         };
 
         async function startClassification() {
@@ -117,8 +118,6 @@
                 const response = await fetch("http://127.0.0.1:5000/status");
                 const data = await response.json();
 
-                console.log("Received:", data);
-
                 if (data.prediction === "BodyWeightSquats") {
                     await stopModels();
                     window.location.href = '/Exercise/LiveSquat';
@@ -127,9 +126,7 @@
                 if (data.frame) {
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
-
-                document.getElementById("statusText").innerText =
-                    `Prediction: ${data.prediction ?? "N/A"}, Confidence: ${data.confidence ?? "N/A"}`;
+                // Do not update statusText – keep it static
             } catch (err) {
                 console.error("Error fetching status:", err);
             }

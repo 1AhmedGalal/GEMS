@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Plank Tracker";
+    ViewBag.Title = "Bicep Curl Tracker";
     Layout = null;
 }
 
@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Plank Tracker</title>
+    <title>Bicep Curl Tracker</title>
     <style>
         :root {
             --primary-color: #1e113a;
@@ -86,7 +86,7 @@
     </style>
 </head>
 <body>
-    <h2>Plank Tracker Live Feed</h2>
+    <h2>Bicep Curl Tracker Live Feed</h2>
 
     <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
@@ -100,34 +100,24 @@
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
-        let startTime = Date.now();
-        let totalElapsedSeconds = 0;
-        let totalMistakes = 0;
-        let counting = false;
-        const exerciseId = 5; // Update this ID based on your DB for Plank
-
-        function updateTimer() {
-            if (counting) {
-                totalElapsedSeconds++;
-            }
-        }
-
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = (seconds % 60).toString().padStart(2, '0');
-            return `${minutes}:${secs}`;
-        }
+        let bicepLeft = 0;
+        let bicepRight = 0;
+        let badLeft = 0;
+        let badRight = 0;
+        let badLeftCounter = 0;
+        let badRightCounter = 0;
+        let wasBadLeft = false;
+        let wasBadRight = false;
+        const exerciseId = 6;
 
         window.onload = () => {
-            startTime = Date.now();
             startFlask();
             setInterval(fetchStatus, 100);
-            setInterval(updateTimer, 1000);
         };
 
         async function startFlask() {
             try {
-                await fetch("/Exercise/Plank", { method: "POST" });
+                await fetch("/Exercise/Bicep", { method: "POST" });
             } catch (err) {
                 console.error("Failed to start Flask backend:", err);
             }
@@ -142,30 +132,35 @@
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
-                const confidence = data.plank_confidence ?? 0;
-                const feedback = data.plank_feedback ?? "";
+                bicepLeft = data.bicep_left_count ?? 0;
+                bicepRight = data.bicep_right_count ?? 0;
+                badLeft = data.bicep_bad_left_form ?? 0;
+                badRight = data.bicep_bad_right_form ?? 0;
 
-                let displayFeedback = "";
-                if (confidence >= 0.95) {
-                    displayFeedback = `Feedback: ${feedback}`;
-                } 
-                
-                if (confidence >= 0.98) {
-
-                    if (feedback !== "Your plank is correct!") {
-                        if (prevFeedback === "Your plank is correct!")
-                            totalMistakes++;
-                    }
-
-                    prevFeedback = feedback;
-
+                if (badLeft && !wasBadLeft) {
+                    badLeftCounter++;
+                    wasBadLeft = true;
+                } else if (!badLeft) {
+                    wasBadLeft = false;
                 }
 
-                counting = confidence >= 0.95 && feedback === "Your plank is correct!";
+                if (badRight && !wasBadRight) {
+                    badRightCounter++;
+                    wasBadRight = true;
+                } else if (!badRight) {
+                    wasBadRight = false;
+                }
+
+                const leftFeedback = badLeft ? "Bad left Arm Form! Please keep your hands to your side" : "";
+                const rightFeedback = badRight ? "Bad right Arm Form! Please keep your hands to your side" : "";
 
                 document.getElementById("statusText").innerText =
-                    `${displayFeedback}\nTime: ${formatTime(totalElapsedSeconds)}`;
-
+                    `Left Arm Reps: ${bicepLeft}\n` +
+                    `Right Arm Reps: ${bicepRight}\n` +
+                    `Left Arm Mistakes: ${badLeftCounter}\n` +
+                    `Right Arm Mistakes: ${badRightCounter}\n` +
+                    `Left Arm Feedback: ${leftFeedback}\n` +
+                    `Right Arm Feedback: ${rightFeedback}`;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
@@ -180,8 +175,8 @@
                     },
                     body: JSON.stringify({
                         exerciseId: exerciseId,
-                        totalRepsPlayed: totalElapsedSeconds,
-                        totalMistakesMade: totalMistakes 
+                        totalRepsPlayed: bicepLeft + bicepRight,
+                        totalMistakesMade: badLeftCounter + badRightCounter
                     })
                 });
 
@@ -193,12 +188,12 @@
         }
 
         async function handleBackToHome() {
-            await stopPlank();
+            await stopBicep();
             await saveExerciseData();
             window.location.href = '/Home/Index';
         }
 
-        async function stopPlank() {
+        async function stopBicep() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -211,7 +206,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping plank tracking:", err);
+                console.error("Error stopping bicep tracking:", err);
             }
         }
     </script>

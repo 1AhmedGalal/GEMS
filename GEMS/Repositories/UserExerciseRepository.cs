@@ -83,7 +83,7 @@ namespace GEMS.Repositories
                 existingUserExercise.ExerciseId = item.ExerciseId;
                 existingUserExercise.TotalRepsPlayed = item.TotalRepsPlayed;
                 existingUserExercise.TotalMistakesMade = item.TotalMistakesMade;
-                existingUserExercise.WeightUsed = item.WeightUsed;
+                existingUserExercise.DateTime = item.DateTime;
 
                 _dbContext.SaveChanges();
             }

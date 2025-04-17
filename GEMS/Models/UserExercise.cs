@@ -18,7 +18,7 @@ namespace GEMS.Models
         [Range(0, 200)]
         public int TotalMistakesMade { get; set; } = 0;
 
-        [Range(0, 100)]
-        public float WeightUsed { get; set; } = 0;
+        [Required(ErrorMessage = "Date is required.")]
+        public DateTime DateTime { get; set; }
     }
 }

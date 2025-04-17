@@ -20,7 +20,7 @@
                         <th>Exercise</th>
                         <th>Reps</th>
                         <th>Mistakes</th>
-                        <th>Weight Used</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,9 +28,20 @@
                     {
                         <tr>
                             <td>@exercise.ExerciseName</td>
-                            <td>@exercise.TotalRepsPlayed</td>
+
+                            @if (exercise.ExerciseName == "Planks")
+                            {
+                                <td>1 (lasted @exercise.TotalRepsPlayed seconds)</td>
+                            }
+                            else
+                            {
+                                <td>@exercise.TotalRepsPlayed</td>
+                            }
+
+
+                            
                             <td>@exercise.TotalMistakesMade</td>
-                            <td>@exercise.WeightUsed kg</td>
+                            <td>@exercise.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
                         </tr>
                     }
                 </tbody>

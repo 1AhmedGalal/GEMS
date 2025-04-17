@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Squat Tracker";
-    Layout = null; // remove if you're using a shared layout
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -41,6 +41,7 @@
             width: 70%;
             text-align: left;
             font-weight: bold;
+            white-space: pre-line;
         }
 
         .frame-container {
@@ -99,9 +100,14 @@
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
+        let totalMistakes = 0;
+        let currentReps = 0;
+        const exerciseId = 1; // Replace this with the actual ExerciseId (e.g., Squats = 1)
+        let prevFeedback = "";
+
         window.onload = () => {
             startFlask();
-            setInterval(fetchStatus, 50); // Update every 50ms for smoother feed
+            setInterval(fetchStatus, 100); // Match update frequency with plank tracker
         };
 
         async function startFlask() {
@@ -112,28 +118,60 @@
             }
         }
 
+
         async function fetchStatus() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/status");
                 const data = await response.json();
 
-                console.log("Received:", data);
-
                 if (data.frame) {
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
+                const feedback = data.error ?? "None";
+                const reps = data.counter ?? 0;
+
+                // Update counters
+                currentReps = reps;
+                if (feedback === "Knee too forward") {
+                    if(prevFeedback != feedback) 
+                       totalMistakes++;
+                }
+                prevFeedback = feedback;
+
+
                 document.getElementById("statusText").innerText =
-                    `Reps: ${data.counter}, Stage: ${data.stage ?? "N/A"}, Error: ${data.error ?? "None"}`;
+                    `Feedback: ${feedback}\nReps: ${reps}`;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
 
+        async function saveExerciseData() {
+            try {
+                const response = await fetch("/Exercise/SaveExerciseData", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        exerciseId: exerciseId,
+                        totalRepsPlayed: currentReps,
+                        totalMistakesMade: totalMistakes
+                    })
+                });
+
+                const result = await response.json();
+                console.log("Save result:", result);
+            } catch (err) {
+                console.error("Failed to save exercise data:", err);
+            }
+        }
+
         async function handleBackToHome() {
-            stopSquat().then(() => {
-                window.location.href = '/Home/Index';
-            });
+            await stopSquat();
+            await saveExerciseData(); // Call it before redirect
+            window.location.href = '/Home/Index';
         }
 
         async function stopSquat() {

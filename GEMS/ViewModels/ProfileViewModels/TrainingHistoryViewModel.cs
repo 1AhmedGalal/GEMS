@@ -12,6 +12,6 @@
         public string ExerciseName { get; set; } = null!;
         public int TotalRepsPlayed { get; set; }
         public int TotalMistakesMade { get; set; }
-        public float WeightUsed { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }
