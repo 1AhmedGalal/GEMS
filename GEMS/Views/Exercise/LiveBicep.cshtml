@@ -137,6 +137,7 @@
                 badLeft = data.bicep_bad_left_form ?? 0;
                 badRight = data.bicep_bad_right_form ?? 0;
 
+                // Update bad counters
                 if (badLeft && !wasBadLeft) {
                     badLeftCounter++;
                     wasBadLeft = true;
@@ -151,14 +152,24 @@
                     wasBadRight = false;
                 }
 
+                // Change theme color based on bad form
+                const root = document.documentElement;
+                if (badLeft || badRight) {
+                    root.style.setProperty('--secondary-color', '#000000'); // dark red
+                    root.style.setProperty('--tertiary-color', '#ffffff');  // white
+                    document.body.style.backgroundColor = '#8B0000';        // black
+                } else {
+                    root.style.setProperty('--secondary-color', '#52f3ea'); // original
+                    root.style.setProperty('--tertiary-color', '#fffef7');
+                    document.body.style.backgroundColor = '#1e113a';
+                }
+
                 const leftFeedback = badLeft ? "Bad left Arm Form! Please keep your hands to your side" : "";
                 const rightFeedback = badRight ? "Bad right Arm Form! Please keep your hands to your side" : "";
 
                 document.getElementById("statusText").innerText =
                     `Left Arm Reps: ${bicepLeft}\n` +
                     `Right Arm Reps: ${bicepRight}\n` +
-                    `Left Arm Mistakes: ${badLeftCounter}\n` +
-                    `Right Arm Mistakes: ${badRightCounter}\n` +
                     `Left Arm Feedback: ${leftFeedback}\n` +
                     `Right Arm Feedback: ${rightFeedback}`;
             } catch (err) {

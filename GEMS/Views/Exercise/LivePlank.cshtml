@@ -145,6 +145,18 @@
                 const confidence = data.plank_confidence ?? 0;
                 const feedback = data.plank_feedback ?? "";
 
+                // Color change based on form correctness
+                const root = document.documentElement;
+                if (feedback !== "Your plank is correct!" && feedback !== "") {
+                    root.style.setProperty('--secondary-color', '#000000'); // dark red
+                    root.style.setProperty('--tertiary-color', '#ffffff');  // white
+                    document.body.style.backgroundColor = '#8B0000';        // dark red background
+                } else {
+                    root.style.setProperty('--secondary-color', '#52f3ea'); // original
+                    root.style.setProperty('--tertiary-color', '#fffef7');
+                    document.body.style.backgroundColor = '#1e113a';
+                }
+
                 let displayFeedback = "";
                 if (confidence >= 0.95) {
                     displayFeedback = `Feedback: ${feedback}`;
