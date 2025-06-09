@@ -144,8 +144,18 @@
                         content += `\nFeedback: ${feedback === null || feedback === "None" ? "" : feedback}`;
                     }
 
+                    if (data.final_action.toLowerCase() === "plank") {
+                        stopClassification().then(() => {
+                            window.location.href = "/Exercise/LivePlank";
+                        }).catch((err) => {
+                            console.error("Error stopping classification tracking:", err);
+                            window.location.href = "/Exercise/LivePlank";
+                        });
+                    }
+
                     statusBox.innerText = content;
                 }
+
 
             } catch (err) {
                 console.error("Error fetching status:", err);
