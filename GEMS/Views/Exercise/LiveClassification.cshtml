@@ -105,10 +105,10 @@
             setInterval(fetchStatus, 50);
 
             // Stop models and redirect to LiveBicep after 3 seconds
-            setTimeout(async () => {
-                await stopModels(); // ensure stop is triggered
-                window.location.href = '/Exercise/LiveBicep';
-            }, 8000);
+            // setTimeout(async () => {
+            //     await stopModels(); // ensure stop is triggered
+            //     window.location.href = '/Exercise/LiveBicep';
+            // }, 8000);
         };
 
         async function startClassification() {
