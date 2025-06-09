@@ -103,12 +103,6 @@
         window.onload = () => {
             startClassification();
             setInterval(fetchStatus, 50);
-
-            // Stop models and redirect to LiveBicep after 3 seconds
-            // setTimeout(async () => {
-            //     await stopModels(); // ensure stop is triggered
-            //     window.location.href = '/Exercise/LiveBicep';
-            // }, 8000);
         };
 
         async function startClassification() {
@@ -128,15 +122,29 @@
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
-                // Show classification results if available
                 if (data.final_action && data.avg_confidence !== undefined) {
                     const statusBox = document.getElementById("statusText");
 
-                    const leftForm = data.bicep_bad_left_form ? "❌" : "✅";
-                    const rightForm = data.bicep_bad_right_form ? "❌" : "✅";
+                    let content = `Exercise: ${data.final_action}\nConfidence: ${(data.avg_confidence * 100).toFixed(1)}%\n`;
 
-                    statusBox.innerText =
-                        `Please Start Doing The Exercise.....` + data.final_action;
+                    if (data.final_action.toLowerCase() === "curl") {
+                        const leftForm = parseInt(data.bicep_bad_left_form) === 1 ? "Wrong!" : "";
+                        const rightForm = parseInt(data.bicep_bad_right_form) === 1 ? "Wrong!" : "";
+
+                        content += `\nLeft Count: ${data.bicep_left_count}`;
+                        content += `\nRight Count: ${Math.min(data.bicep_right_count, 1)}`;
+                        content += `\nLeft Form: ${leftForm}`;
+                        content += `\nRight Form: ${rightForm}`;
+                    }
+
+                    if (data.final_action.toLowerCase() === "bodyweightsquats") {
+                        const counter = data.counter ?? 0;
+                        const feedback = data.error ?? null;
+                        content += `\nCounter: ${counter}`;
+                        content += `\nFeedback: ${feedback === null || feedback === "None" ? "" : feedback}`;
+                    }
+
+                    statusBox.innerText = content;
                 }
 
             } catch (err) {
