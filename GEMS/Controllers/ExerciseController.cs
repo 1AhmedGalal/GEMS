@@ -87,6 +87,44 @@ namespace GEMS.Controllers
             }
         }
 
+        public ActionResult LivePushups()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Pushups()
+        {
+            var trigger = new { trigger = "pushup-rule-based" };
+            var json = JsonConvert.SerializeObject(trigger);
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                var result = await response.Content.ReadAsStringAsync();
+                return Content(result, "application/json"); // ✅ FIXED
+            }
+        }
+
+        public ActionResult LiveJumping()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Jumping()
+        {
+            var trigger = new { trigger = "jumping-rule-based" };
+            var json = JsonConvert.SerializeObject(trigger);
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                var result = await response.Content.ReadAsStringAsync();
+                return Content(result, "application/json"); // ✅ FIXED
+            }
+        }
+
         public ActionResult LiveClassification()
         {
             return View();

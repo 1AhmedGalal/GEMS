@@ -6,7 +6,7 @@
 <h2>Starting in <span id="countdown">10</span> seconds...</h2>
 
 <script>
-    let seconds = 10;
+    let seconds = 2;
     let countdownElement = document.getElementById("countdown");
 
     let timer = setInterval(function () {
@@ -21,7 +21,7 @@
             } else if (@id === 1) {
                 window.location.href = '@Url.Action("LiveSquat", "Exercise")'; // fallback example
             } else if (@id === 2) {
-                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+                window.location.href = '@Url.Action("LiveJumping", "Exercise")'; // fallback example
             } else if (@id === 3) {
                 window.location.href = '@Url.Action("LivePlank", "Exercise")'; // fallback example
             } else if (@id === 4) {
@@ -34,8 +34,8 @@
                 window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
             } else if (@id === 8) {
                 window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
-            } else if (@id === 9) {
-                window.location.href = '@Url.Action("?", "Exercise")'; // fallback example
+            } else if (@id === 200) {
+                window.location.href = '@Url.Action("LivePushups", "Exercise")'; // fallback example
             }
 
         }

@@ -40,8 +40,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUNsYXNzaWZpY2F0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveJumping.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUp1bXBpbmcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LivePlank.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZVBsYW5rLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LivePushups.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZVB1c2h1cHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveSquat.cshtml]

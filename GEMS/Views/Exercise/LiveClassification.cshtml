@@ -153,6 +153,20 @@
                         });
                     }
 
+                    if (data.final_action.toLowerCase() === "jumpingjack") {
+                        const counterj = data.counter_jumping ?? 0;
+                        const feedbackj = data.error_jumping ?? null;
+                        content += `\nCounter: ${counterj}`;
+                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
+                    }
+
+                    if (data.final_action.toLowerCase() === "pushups") {
+                        const counterj = data.counter_pushup ?? 0;
+                        const feedbackj = data.error_pushup ?? null;
+                        content += `\nCounter: ${counterj}`;
+                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
+                    }
+
                     statusBox.innerText = content;
                 }
 
