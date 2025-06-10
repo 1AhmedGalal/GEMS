@@ -167,6 +167,13 @@
                         content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
                     }
 
+                    if (data.final_action.toLowerCase() === "pullups") {
+                        const counterj = data.pullup_count ?? 0;
+                        const feedbackj = data.pullup_bad_form ?? null;
+                        content += `\nCounter: ${counterj}`;
+                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
+                    }
+
                     statusBox.innerText = content;
                 }
 
