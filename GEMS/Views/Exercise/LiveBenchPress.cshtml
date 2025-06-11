@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "Bench Press Tracker";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Bench Press Tracker</title>
+    <style>
+        :root {
+            --primary-color: #1e113a;
+            --secondary-color: #52f3ea;
+            --tertiary-color: #fffef7;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: var(--primary-color);
+            color: var(--tertiary-color);
+            padding: 20px;
+            margin: 0;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: var(--secondary-color);
+        }
+
+        .status {
+            font-size: 24px;
+            margin-top: 30px;
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            display: inline-block;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            width: 70%;
+            text-align: left;
+            font-weight: bold;
+            white-space: pre-line;
+        }
+
+        .frame-container {
+            margin-top: 40px;
+            max-height: 800px;
+            overflow: hidden;
+        }
+
+        img {
+            max-width: 80%;
+            height: auto;
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
+        }
+
+        .back-btn, .stop-btn {
+            margin-top: 30px;
+            padding: 12px 24px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+            .stop-btn:hover {
+                background-color: #e53935;
+            }
+
+        .back-btn:hover {
+            background-color: #3fd3c8;
+        }
+    </style>
+</head>
+<body>
+    <h2>Bench Press Tracker Live Feed</h2>
+
+    <!-- Status Box -->
+    <div class="status" id="statusText">Loading...</div>
+
+    <!-- Live Frame -->
+    <div class="frame-container">
+        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    </div>
+
+    <!-- Back to Home Button -->
+    <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
+
+    <script>
+        let totalMistakes = 0;
+        let currentReps = 0;
+        const exerciseId = 9; // Bench Press exercise ID
+        let prevFeedback = "";
+
+        window.onload = () => {
+            startFlask();
+            setInterval(fetchStatus, 100);
+        };
+
+        async function startFlask() {
+            try {
+                await fetch("/Exercise/BenchPress", { method: "POST" });
+            } catch (err) {
+                console.error("Failed to start Flask backend:", err);
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/status");
+                const data = await response.json();
+
+                if (data.frame) {
+                    document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
+                }
+
+                const feedback = data.error_bench_press ?? "None";
+                const reps = data.counter_bench_press ?? 0;
+
+                // Update theme based on feedback
+                const root = document.documentElement;
+                if (feedback !== "None") {
+                    root.style.setProperty('--secondary-color', '#000000');
+                    root.style.setProperty('--tertiary-color', '#ffffff');
+                    document.body.style.backgroundColor = '#8B0000';
+                } else {
+                    root.style.setProperty('--secondary-color', '#52f3ea');
+                    root.style.setProperty('--tertiary-color', '#fffef7');
+                    document.body.style.backgroundColor = '#1e113a';
+                }
+
+                // Update counters
+                currentReps = reps;
+                if (feedback === "Did not reach full extension") {
+                    if (prevFeedback !== feedback) {
+                        totalMistakes++;
+                    }
+                }
+                prevFeedback = feedback;
+
+                document.getElementById("statusText").innerText =
+                    `Feedback: ${feedback}\nReps: ${reps}`;
+            } catch (err) {
+                console.error("Error fetching status:", err);
+            }
+        }
+
+        async function saveExerciseData() {
+            try {
+                const response = await fetch("/Exercise/SaveExerciseData", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        exerciseId: exerciseId,
+                        totalRepsPlayed: currentReps,
+                        totalMistakesMade: totalMistakes
+                    })
+                });
+
+                const result = await response.json();
+                console.log("Save result:", result);
+            } catch (err) {
+                console.error("Failed to save exercise data:", err);
+            }
+        }
+
+        async function handleBackToHome() {
+            await stopBenchPress();
+            await saveExerciseData();
+            window.location.href = '/Home/Index';
+        }
+
+        async function stopBenchPress() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/start", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ trigger: "stop" })
+                });
+
+                const data = await response.json();
+                console.log(data);
+            } catch (err) {
+                console.error("Error stopping bench press tracking:", err);
+            }
+        }
+    </script>
+</body>
+</html>

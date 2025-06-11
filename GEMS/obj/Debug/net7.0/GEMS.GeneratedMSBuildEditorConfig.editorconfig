@@ -32,6 +32,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcQ291bnRkb3duLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveBenchPress.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUJlbmNoUHJlc3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveBicep.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUJpY2VwLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -40,8 +44,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUNsYXNzaWZpY2F0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveFrontRaises.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUZyb250UmFpc2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveJumping.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUp1bXBpbmcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LiveLegRaises.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcTGl2ZUxlZ1JhaXNlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Exercise/LivePlank.cshtml]

@@ -125,6 +125,63 @@ namespace GEMS.Controllers
             }
         }
 
+        public ActionResult LiveLegRaises()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> LegRaises()
+        {
+            var trigger = new { trigger = "leg_raise-rule-based" };
+            var json = JsonConvert.SerializeObject(trigger);
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                var result = await response.Content.ReadAsStringAsync();
+                return Content(result, "application/json"); // ✅ FIXED
+            }
+        }
+
+        public ActionResult LiveFrontRaises()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> FrontRaises()
+        {
+            var trigger = new { trigger = "front_raise-rule-based" };
+            var json = JsonConvert.SerializeObject(trigger);
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                var result = await response.Content.ReadAsStringAsync();
+                return Content(result, "application/json"); // ✅ FIXED
+            }
+        }
+
+        public ActionResult LiveBenchPress()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> BenchPress()
+        {
+            var trigger = new { trigger = "bench-rule-based" };
+            var json = JsonConvert.SerializeObject(trigger);
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                var result = await response.Content.ReadAsStringAsync();
+                return Content(result, "application/json"); // ✅ FIXED
+            }
+        }
+
         public ActionResult LiveJumping()
         {
             return View();
