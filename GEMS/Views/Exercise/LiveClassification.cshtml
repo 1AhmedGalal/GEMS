@@ -39,13 +39,19 @@
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
             width: 70%;
-            text-align: center;
             font-weight: bold;
             white-space: pre-line;
         }
 
-        .frame-container {
+        .frame-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-top: 40px;
+        }
+
+        .frame-container {
             max-height: 800px;
             overflow: hidden;
         }
@@ -58,7 +64,31 @@
             box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
         }
 
-        .back-btn, .stop-btn {
+        .counter-left, .counter-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            font-size: 36px;
+            font-weight: bold;
+            width: 160px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .counter-left {
+            left: 15%;
+        }
+
+        .counter-right {
+            right: 15%;
+        }
+
+        .back-btn {
             margin-top: 30px;
             padding: 12px 24px;
             background-color: var(--secondary-color);
@@ -71,18 +101,9 @@
             transition: all 0.3s ease;
         }
 
-        .stop-btn {
-            background-color: #f44336;
-            color: white;
-        }
-
-            .stop-btn:hover {
-                background-color: #e53935;
+            .back-btn:hover {
+                background-color: #3fd3c8;
             }
-
-        .back-btn:hover {
-            background-color: #3fd3c8;
-        }
     </style>
 </head>
 <body>
@@ -91,18 +112,37 @@
     <!-- Status Box -->
     <div class="status" id="statusText">Please start doing the exercise.</div>
 
-    <!-- Live Frame -->
-    <div class="frame-container">
-        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    <!-- Frame and Counters -->
+    <div class="frame-wrapper">
+        <div class="counter-left" id="counterLeft" style="display:none;">0</div>
+        <div class="frame-container">
+            <img id="liveFrame" src="" alt="Live frame not loaded" />
+        </div>
+        <div class="counter-right" id="counterRight" style="display:none;">0</div>
     </div>
 
-    <!-- Back to Home Button -->
+    <!-- Back Button -->
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
+        let lastAction = null;
+        let leftCount = 0;
+        let rightCount = 0;
+        let totalReps = 0;
+        let totalMistakes = 0;
+
+        const EXERCISE_IDS = {
+            bodyweightsquats: 1,
+            jumpingjack: 2,
+            pullups: 3,
+            pushups: 4,
+            plank: 5,
+            curl: 6
+        };
+
         window.onload = () => {
             startClassification();
-            setInterval(fetchStatus, 50);
+            setInterval(fetchStatus, 100);
         };
 
         async function startClassification() {
@@ -122,106 +162,174 @@
                     document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
-                if (data.final_action && data.avg_confidence !== undefined) {
-                    const statusBox = document.getElementById("statusText");
+                const statusBox = document.getElementById("statusText");
 
-                    let content = `Exercise: ${data.final_action}\nConfidence: ${(data.avg_confidence * 100).toFixed(1)}%\n`;
-
-                    if (data.final_action.toLowerCase() === "curl") {
-                        const leftForm = parseInt(data.bicep_bad_left_form) === 1 ? "Wrong!" : "";
-                        const rightForm = parseInt(data.bicep_bad_right_form) === 1 ? "Wrong!" : "";
-
-                        content += `\nLeft Count: ${data.bicep_left_count}`;
-                        content += `\nRight Count: ${Math.min(data.bicep_right_count, 1)}`;
-                        content += `\nLeft Form: ${leftForm}`;
-                        content += `\nRight Form: ${rightForm}`;
-                    }
-
-                    if (data.final_action.toLowerCase() === "bodyweightsquats") {
-                        const counter = data.counter ?? 0;
-                        const feedback = data.error ?? null;
-                        content += `\nCounter: ${counter}`;
-                        content += `\nFeedback: ${feedback === null || feedback === "None" ? "" : feedback}`;
-                    }
-
-                    if (data.final_action.toLowerCase() === "plank") {
-                        stopClassification().then(() => {
-                            window.location.href = "/Exercise/LivePlank";
-                        }).catch((err) => {
-                            console.error("Error stopping classification tracking:", err);
-                            window.location.href = "/Exercise/LivePlank";
-                        });
-                    }
-
-                    if (data.final_action.toLowerCase() === "jumpingjack") {
-                        const counterj = data.counter_jumping ?? 0;
-                        const feedbackj = data.error_jumping ?? null;
-                        content += `\nCounter: ${counterj}`;
-                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
-                    }
-
-                    if (data.final_action.toLowerCase() === "pushups") {
-                        const counterj = data.counter_pushup ?? 0;
-                        const feedbackj = data.error_pushup ?? null;
-                        content += `\nCounter: ${counterj}`;
-                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
-                    }
-
-                    if (data.final_action.toLowerCase() === "pullups") {
-                        const counterj = data.pullup_count ?? 0;
-                        const feedbackj = data.pullup_bad_form ?? null;
-                        content += `\nCounter: ${counterj}`;
-                        content += `\nFeedback: ${feedbackj === null || feedbackj === "None" ? "" : feedbackj}`;
-                    }
-
-                    statusBox.innerText = content;
+                if (!data.final_action || data.final_action === "None") {
+                    statusBox.innerText = "Keep playing so we can identify the exercise...";
+                    resetColorsToDefault();
+                    return;
                 }
 
+                lastAction = data.final_action.toLowerCase();
+                let feedback = "Evaluating Exercise...";
+                let hasBadForm = false;
+
+                // Reset visibility
+                document.getElementById("counterLeft").style.display = "none";
+                document.getElementById("counterRight").style.display = "none";
+
+                if (lastAction === "curl") {
+                    leftCount = data.bicep_left_count ?? 0;
+                    rightCount = data.bicep_right_count ?? 0;
+                    const badLeft = parseInt(data.bicep_bad_left_form) === 1;
+                    const badRight = parseInt(data.bicep_bad_right_form) === 1;
+                    hasBadForm = badLeft || badRight;
+
+                    feedback = `Exercise: Bicep Curl`;
+                    if (badLeft) feedback += `\nLeft Arm: Wrong Form`;
+                    if (badRight) feedback += `\nRight Arm: Wrong Form`;
+
+                    document.getElementById("counterLeft").innerText = leftCount;
+                    document.getElementById("counterRight").innerText = rightCount;
+                    document.getElementById("counterLeft").style.display = "block";
+                    document.getElementById("counterRight").style.display = "block";
+
+                    totalReps = leftCount + rightCount;
+                    totalMistakes = (badLeft ? 1 : 0) + (badRight ? 1 : 0);
+                }
+
+                else if (lastAction === "bodyweightsquats") {
+                    const counter = data.counter ?? 0;
+                    const err = data.error;
+                    hasBadForm = err && err !== "None";
+
+                    feedback = `Exercise: Squats`;
+                    if (hasBadForm) feedback += `\nFeedback: ${err}`;
+
+                    document.getElementById("counterLeft").innerText = counter;
+                    document.getElementById("counterLeft").style.display = "block";
+
+                    totalReps = counter;
+                    totalMistakes = hasBadForm ? 1 : 0;
+                }
+
+                else if (lastAction === "jumpingjack") {
+                    const counter = data.counter_jumping ?? 0;
+                    const err = data.error_jumping;
+                    hasBadForm = err && err !== "None";
+
+                    feedback = `Exercise: Jumping Jacks`;
+                    if (hasBadForm) feedback += `\nFeedback: ${err}`;
+
+                    document.getElementById("counterLeft").innerText = counter;
+                    document.getElementById("counterLeft").style.display = "block";
+
+                    totalReps = counter;
+                    totalMistakes = hasBadForm ? 1 : 0;
+                }
+
+                else if (lastAction === "pushups") {
+                    const counter = data.counter_pushup ?? 0;
+                    const err = data.error_pushup;
+                    hasBadForm = err && err !== "None";
+
+                    feedback = `Exercise: Pushups`;
+                    if (hasBadForm) feedback += `\nFeedback: ${err}`;
+
+                    document.getElementById("counterLeft").innerText = counter;
+                    document.getElementById("counterLeft").style.display = "block";
+
+                    totalReps = counter;
+                    totalMistakes = hasBadForm ? 1 : 0;
+                }
+
+                else if (lastAction === "pullups") {
+                    const counter = data.pullup_count ?? 0;
+                    const err = data.pullup_bad_form;
+                    hasBadForm = err && err !== "None";
+
+                    feedback = `Exercise: Pullups`;
+                    if (hasBadForm) feedback += `\nFeedback: ${err}`;
+
+                    document.getElementById("counterLeft").innerText = counter;
+                    document.getElementById("counterLeft").style.display = "block";
+
+                    totalReps = counter;
+                    totalMistakes = hasBadForm ? 1 : 0;
+                }
+
+                else if (lastAction === "plank") {
+                    stopClassification().then(() => {
+                        window.location.href = "/Exercise/LivePlank";
+                    });
+                    return;
+                }
+
+                // Update feedback text and style
+                statusBox.innerText = feedback;
+
+                const root = document.documentElement;
+                if (hasBadForm) {
+                    root.style.setProperty('--secondary-color', '#000000');
+                    root.style.setProperty('--tertiary-color', '#ffffff');
+                    document.body.style.backgroundColor = '#8B0000';
+                } else {
+                    resetColorsToDefault();
+                }
 
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
 
-
-        async function stopModels() {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/start", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ trigger: "stop" })
-                });
-
-                const data = await response.json();
-                console.log("Stop response:", data);
-            } catch (err) {
-                console.error("Error stopping model tracking:", err);
-            }
+        function resetColorsToDefault() {
+            const root = document.documentElement;
+            root.style.setProperty('--secondary-color', '#52f3ea');
+            root.style.setProperty('--tertiary-color', '#fffef7');
+            document.body.style.backgroundColor = '#1e113a';
         }
 
-        async function handleBackToHome() {
-            stopClassification().then(() => {
-                window.location.href = '/Home/Index';
-            });
+
+        async function saveExerciseData() {
+            if (!lastAction || lastAction === "plank") return;
+            const exerciseId = EXERCISE_IDS[lastAction] ?? null;
+            if (!exerciseId) return;
+
+            try {
+                const response = await fetch("/Exercise/SaveExerciseData", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        exerciseId: exerciseId,
+                        totalRepsPlayed: totalReps,
+                        totalMistakesMade: totalMistakes
+                    })
+                });
+
+                const result = await response.json();
+                console.log("Save result:", result);
+            } catch (err) {
+                console.error("Failed to save exercise data:", err);
+            }
         }
 
         async function stopClassification() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ trigger: "stop" })
                 });
-
-                const data = await response.json();
-                console.log(data);
+                return await response.json();
             } catch (err) {
-                console.error("Error stopping classification tracking:", err);
+                console.error("Error stopping classification:", err);
             }
+        }
+
+        async function handleBackToHome() {
+            await stopClassification();
+            await saveExerciseData();
+            window.location.href = '/Home/Index';
         }
     </script>
 </body>

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Pullup Tracker";
+    ViewBag.Title = "Pullups Tracker";
     Layout = null;
 }
 
@@ -7,7 +7,10 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Pullup Tracker</title>
+    <title>Pullups Tracker</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <style>
         :root {
             --primary-color: #1e113a;
@@ -30,22 +33,28 @@
         }
 
         .status {
-            font-size: 24px;
-            margin-top: 30px;
+            font-size: 32px;
+            margin-bottom: 20px;
             background-color: var(--tertiary-color);
             color: var(--primary-color);
             display: inline-block;
             padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
-            width: 70%;
-            text-align: left;
+            text-align: center;
             font-weight: bold;
             white-space: pre-line;
         }
 
+        .frame-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .frame-container {
-            margin-top: 40px;
+            margin-top: 20px;
             max-height: 800px;
             overflow: hidden;
         }
@@ -56,6 +65,23 @@
             border: 3px solid var(--secondary-color);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
+        }
+
+        .counter-box {
+            position: absolute;
+            left: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            font-size: 60px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            z-index: 10;
         }
 
         .back-btn, .stop-btn {
@@ -86,22 +112,23 @@
     </style>
 </head>
 <body>
-    <h2>Pullup Tracker Live Feed</h2>
+    <h2>Pullups Tracker Live Feed</h2>
 
-    <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
 
-    <!-- Live Frame -->
-    <div class="frame-container">
-        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    <div class="frame-wrapper">
+        <div class="counter-box" id="counterBox">0</div>
+        <div class="frame-container">
+            <img id="liveFrame" src="" alt="Live frame not loaded" />
+        </div>
     </div>
 
-    <!-- Back to Home Button -->
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
         let totalMistakes = 0;
         let currentReps = 0;
+        let animatedCounter = 0;
         const exerciseId = 3; // Pullup exercise ID
         let prevFeedback = "";
 
@@ -130,9 +157,8 @@
                 const feedback = data.pullup_bad_form ?? "None";
                 const reps = data.pullup_count ?? 0;
 
-                // Update theme based on feedback
                 const root = document.documentElement;
-                if (feedback === "None") {
+                if (feedback !== "None" && feedback !== "") {
                     root.style.setProperty('--secondary-color', '#000000');
                     root.style.setProperty('--tertiary-color', '#ffffff');
                     document.body.style.backgroundColor = '#8B0000';
@@ -142,17 +168,28 @@
                     document.body.style.backgroundColor = '#1e113a';
                 }
 
-                // Update counters
+                document.getElementById("statusText").innerText = `Feedback: ${feedback}`;
+
+                if (animatedCounter !== reps) {
+                    anime({
+                        targets: { value: animatedCounter },
+                        value: reps,
+                        round: 1,
+                        easing: 'easeOutExpo',
+                        duration: 800,
+                        update: function (anim) {
+                            document.getElementById("counterBox").innerText = anim.animations[0].currentValue;
+                        }
+                    });
+                    animatedCounter = reps;
+                }
+
                 currentReps = reps;
-                if (feedback === "Did not reach peak") {
-                    if (prevFeedback !== feedback) {
-                        totalMistakes++;
-                    }
+
+                if (feedback !== "None") {
+                    if (prevFeedback !== feedback) totalMistakes++;
                 }
                 prevFeedback = feedback;
-
-                document.getElementById("statusText").innerText =
-                    `Feedback: ${feedback}\nReps: ${reps}`;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
@@ -180,12 +217,12 @@
         }
 
         async function handleBackToHome() {
-            await stopPullup();
+            await stopPullups();
             await saveExerciseData();
             window.location.href = '/Home/Index';
         }
 
-        async function stopPullup() {
+        async function stopPullups() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -198,7 +235,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping pullup tracking:", err);
+                console.error("Error stopping pullups tracking:", err);
             }
         }
     </script>

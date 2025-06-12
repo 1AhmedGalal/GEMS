@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Jumping Jack Tracker";
+    ViewBag.Title = "Jumping Jacks Tracker";
     Layout = null;
 }
 
@@ -7,7 +7,10 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Jumping Jack Tracker</title>
+    <title>Jumping Jacks Tracker</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <style>
         :root {
             --primary-color: #1e113a;
@@ -29,34 +32,57 @@
             color: var(--secondary-color);
         }
 
-        .status_jumping {
-            font-size: 24px;
-            margin-top: 30px;
+        .status {
+            font-size: 32px;
+            margin-bottom: 20px;
             background-color: var(--tertiary-color);
             color: var(--primary-color);
             display: inline-block;
             padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
-            width: 70%;
-            text-align: left;
+            text-align: center;
             font-weight: bold;
             white-space: pre-line;
         }
 
-        .frame-container_jumping {
-            margin-top: 40px;
+        .frame-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .frame-container {
+            margin-top: 20px;
             max-height: 800px;
             overflow: hidden;
         }
 
-            .frame-container_jumping img {
-                max-width: 80%;
-                height: auto;
-                border: 3px solid var(--secondary-color);
-                border-radius: 10px;
-                box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
-            }
+        img {
+            max-width: 80%;
+            height: auto;
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
+        }
+
+        .counter-box {
+            position: absolute;
+            left: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            font-size: 60px;
+            font-weight: bold;
+            width: 150px;
+            text-align: center;
+            z-index: 10;
+        }
 
         .back-btn, .stop-btn {
             margin-top: 30px;
@@ -86,28 +112,32 @@
     </style>
 </head>
 <body>
-    <h2>Jumping Jack Tracker Live Feed</h2>
+    <h2>Jumping Jacks Tracker Live Feed</h2>
 
-    <div class="status_jumping" id="statusText_jumping">Loading...</div>
+    <div class="status" id="statusText">Loading...</div>
 
-    <div class="frame-container_jumping">
-        <img id="liveFrame_jumping" src="" alt="Live frame not loaded" />
+    <div class="frame-wrapper">
+        <div class="counter-box" id="counterBox">0</div>
+        <div class="frame-container">
+            <img id="liveFrame" src="" alt="Live frame not loaded" />
+        </div>
     </div>
 
-    <button class="back-btn" onclick="handleBackToHome_jumping()">Back to Home</button>
+    <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
-        let totalMistakes_jumping = 0;
-        let currentReps_jumping = 0;
-        const exerciseId_jumping = 2;
-        let prevFeedback_jumping = "";
+        let totalMistakes = 0;
+        let currentReps = 0;
+        let animatedCounter = 0;
+        const exerciseId = 2;
+        let prevFeedback = "";
 
         window.onload = () => {
-            startFlask_jumping();
-            setInterval(fetchStatus_jumping, 100);
+            startFlask();
+            setInterval(fetchStatus, 100);
         };
 
-        async function startFlask_jumping() {
+        async function startFlask() {
             try {
                 await fetch("/Exercise/Jumping", { method: "POST" });
             } catch (err) {
@@ -115,20 +145,20 @@
             }
         }
 
-        async function fetchStatus_jumping() {
+        async function fetchStatus() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/status");
                 const data = await response.json();
 
                 if (data.frame) {
-                    document.getElementById("liveFrame_jumping").src = "data:image/jpeg;base64," + data.frame;
+                    document.getElementById("liveFrame").src = "data:image/jpeg;base64," + data.frame;
                 }
 
-                const feedback_jumping = data.error_jumping ?? "None";
-                const reps_jumping = data.counter_jumping ?? 0;
+                const feedback = data.error_jumping ?? "None";
+                const reps = data.counter_jumping ?? 0;
 
                 const root = document.documentElement;
-                if (feedback_jumping !== "None") {
+                if (feedback !== "None") {
                     root.style.setProperty('--secondary-color', '#000000');
                     root.style.setProperty('--tertiary-color', '#ffffff');
                     document.body.style.backgroundColor = '#8B0000';
@@ -138,20 +168,34 @@
                     document.body.style.backgroundColor = '#1e113a';
                 }
 
-                currentReps_jumping = reps_jumping;
-                if (feedback_jumping !== "None" && feedback_jumping !== prevFeedback_jumping) {
-                    totalMistakes_jumping++;
-                }
-                prevFeedback_jumping = feedback_jumping;
+                document.getElementById("statusText").innerText = `Feedback: ${feedback}`;
 
-                document.getElementById("statusText_jumping").innerText =
-                    `Feedback: ${feedback_jumping}\nReps: ${reps_jumping}`;
+                if (animatedCounter !== reps) {
+                    anime({
+                        targets: { value: animatedCounter },
+                        value: reps,
+                        round: 1,
+                        easing: 'easeOutExpo',
+                        duration: 800,
+                        update: function (anim) {
+                            document.getElementById("counterBox").innerText = anim.animations[0].currentValue;
+                        }
+                    });
+                    animatedCounter = reps;
+                }
+
+                currentReps = reps;
+
+                if (feedback === "Arms not raised") {
+                    if (prevFeedback !== feedback) totalMistakes++;
+                }
+                prevFeedback = feedback;
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
         }
 
-        async function saveExerciseData_jumping() {
+        async function saveExerciseData() {
             try {
                 const response = await fetch("/Exercise/SaveExerciseData", {
                     method: "POST",
@@ -159,9 +203,9 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        exerciseId: exerciseId_jumping,
-                        totalRepsPlayed: currentReps_jumping,
-                        totalMistakesMade: totalMistakes_jumping
+                        exerciseId: exerciseId,
+                        totalRepsPlayed: currentReps,
+                        totalMistakesMade: totalMistakes
                     })
                 });
 
@@ -172,13 +216,13 @@
             }
         }
 
-        async function handleBackToHome_jumping() {
-            await stopJumping_jumping();
-            await saveExerciseData_jumping();
+        async function handleBackToHome() {
+            await stopJumping();
+            await saveExerciseData();
             window.location.href = '/Home/Index';
         }
 
-        async function stopJumping_jumping() {
+        async function stopJumping() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -191,7 +235,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping jumping tracking:", err);
+                console.error("Error stopping jumping jacks tracking:", err);
             }
         }
     </script>

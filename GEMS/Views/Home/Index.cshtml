@@ -15,7 +15,7 @@
         color: var(--tertiary-color);
         margin: 0;
         padding: 0;
-        font-family: sans-serif;
+        font-family: 'Segoe UI', sans-serif;
     }
 
     .main-container {
@@ -25,79 +25,168 @@
         padding: 40px 20px;
     }
 
-    .top-button {
-        margin-bottom: 20px;
-    }
-
-    .content-row {
+    .content-grid {
         display: flex;
         justify-content: center;
-        align-items: center;
-        gap: 40px;
+        align-items: flex-start;
+        gap: 60px;
         flex-wrap: wrap;
+        margin-top: 30px;
     }
 
-    .side-buttons {
+    /* Left Grid */
+    .left-panel {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 30px;
+        align-items: center;
     }
 
-    .main-image {
-        width: 400px;
-        max-width: 90vw;
-        border-radius: 10px;
-        box-shadow: 0 0 20px var(--accent-color);
-    }
-
-    .button {
+    .main-button {
         background-color: var(--secondary-color);
         color: var(--primary-color);
         border: none;
-        padding: 20px 40px; /* increased padding */
-        font-size: 24px; /* larger text */
-        border-radius: 12px;
+        padding: 24px 60px;
+        font-size: 26px;
+        border-radius: 16px;
         cursor: pointer;
-        text-decoration: none;
+        min-width: 300px;
+        box-shadow: 0 8px 18px rgba(82, 243, 234, 0.3);
+        transition: 0.3s;
+        font-weight: bold;
         text-align: center;
-        transition: background-color 0.3s;
-        min-width: 200px; /* optional: makes buttons wide */
+        text-decoration: none;
     }
 
-        .button:hover {
+        .main-button:hover {
             background-color: var(--accent-color);
+            transform: scale(1.03);
         }
+
+    .half-buttons-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .half-button {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border: none;
+        padding: 18px 32px;
+        font-size: 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        min-width: 140px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s, transform 0.3s;
+        box-shadow: 0 4px 12px rgba(82, 243, 234, 0.2);
+    }
+
+        .half-button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+    /* Right Panel */
+    .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .tile-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .tile {
+        background: rgba(255, 255, 255, 0.07);
+        border: 2px solid var(--secondary-color);
+        border-radius: 20px;
+        padding: 30px;
+        width: 240px;
+        text-align: center;
+        color: var(--tertiary-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        text-decoration: none;
+    }
+
+        .tile:hover {
+            background-color: rgba(255, 255, 255, 0.13);
+            transform: translateY(-4px);
+        }
+
+    .tile-icon {
+        font-size: 60px;
+        margin-bottom: 10px;
+    }
+
+    .tile-label {
+        font-size: 18px;
+        line-height: 1.4;
+        font-weight: 600;
+    }
 
 </style>
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-
     <div class="main-container">
-        <a class="button top-button" href="@Url.Action("Countdown", "Exercise", new { id = 0 })">Start General Training</a>
+        <div class="content-grid">
 
-        <div class="content-row">
-            <div class="side-buttons">
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 1 })">Squats</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 200 })">Push Ups</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 666 })">Bench Press</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 3 })">Planks</a>
+            <!-- Left Side -->
+            <div class="left-panel">
+                <a class="main-button" href="@Url.Action("Countdown", "Exercise", new { id = 0 })">Start General Training</a>
 
+                <div class="half-buttons-row">
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 1 })">Squats</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 200 })">Push Ups</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 666 })">Bench Press</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 3 })">Planks</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 4 })">Bicep Curl</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 888 })">Front Raises</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 400 })">Leg Raises</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 500 })">Pull Ups</a>
+                    <a class="half-button" href="@Url.Action("Countdown", "Exercise", new { id = 2 })">Jumping Jacks</a>
+                </div>
             </div>
 
-            <img src="~/photos/body.jpeg" alt="Body Image" class="main-image" />
+            <!-- Right Side -->
+            <div class="right-panel">
+                <div class="tile-row">
+                    <!-- Camera/Video Tile -->
+                    <div class="tile" onclick="document.getElementById('videoInput').click()">
+                        <div class="tile-icon">📷</div>
+                        <div class="tile-label">Choose Camera<br />or Explore Video</div>
+                        <input type="file" id="videoInput" accept="video/*" style="display: none;" />
+                    </div>
 
-            <div class="side-buttons">
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 4 })">Bicep Curl</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 888 })">Front Raises</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 400 })">Leg Raises</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 500 })">Pull Ups</a>
-                <a class="button" href="@Url.Action("Countdown", "Exercise", new { id = 2 })">Jumping Jacks</a>
+                    <!-- History Tile -->
+                    <a class="tile" href="@Url.Action("TrainingHistory", "Profile")">
+                        <div class="tile-icon">📊</div>
+                        <div class="tile-label">Display History</div>
+                    </a>
+                </div>
             </div>
+
         </div>
     </div>
 }
 else
 {
-    <h1>Welcome! Please Login To Start Training</h1>
+    <div class="main-container">
+        <h1 style="font-size: 38px; color: var(--tertiary-color); text-align: center;">Welcome to GEMS</h1>
+        <p style="font-size: 20px; margin-top: 10px; color: rgba(255,255,255,0.8); text-align: center;">
+            Please log in to begin your training journey with guided exercises, history tracking, and more.
+        </p>
+    </div>
 }

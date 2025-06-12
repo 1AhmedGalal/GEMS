@@ -1,13 +1,12 @@
 ﻿@{
-    ViewBag.Title = "Front Raise Tracker";
+    ViewBag.Title = "Front Raises Tracker";
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Front Raise Tracker</title>
+    <title>Front Raises Tracker</title>
     <style>
         :root {
             --primary-color: #1e113a;
@@ -30,22 +29,28 @@
         }
 
         .status {
-            font-size: 24px;
-            margin-top: 30px;
+            font-size: 32px;
+            margin-bottom: 20px;
             background-color: var(--tertiary-color);
             color: var(--primary-color);
             display: inline-block;
             padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
-            width: 70%;
-            text-align: left;
+            text-align: center;
             font-weight: bold;
             white-space: pre-line;
         }
 
-        .frame-container {
+        .frame-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-top: 40px;
+        }
+
+        .frame-container {
             max-height: 800px;
             overflow: hidden;
         }
@@ -56,6 +61,30 @@
             border: 3px solid var(--secondary-color);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
+        }
+
+        .counter-left, .counter-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            font-size: 36px;
+            font-weight: bold;
+            width: 160px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .counter-left {
+            left: 15%;
+        }
+
+        .counter-right {
+            right: 15%;
         }
 
         .back-btn, .stop-btn {
@@ -86,21 +115,28 @@
     </style>
 </head>
 <body>
-    <h2>Front Raise Tracker Live Feed</h2>
+    <h2>Front Raises Tracker Live Feed</h2>
 
+    <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
 
-    <div class="frame-container">
-        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    <!-- Frame with Left and Right Counters -->
+    <div class="frame-wrapper">
+        <div class="counter-left" id="counterLeft">0</div>
+        <div class="frame-container">
+            <img id="liveFrame" src="" alt="Live frame not loaded" />
+        </div>
+        <div class="counter-right" id="counterRight">0</div>
     </div>
 
+    <!-- Back to Home Button -->
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
         let frontLeft = 0;
         let frontRight = 0;
-        let badLeft = 0;
-        let badRight = 0;
+        let badLeft = "None";
+        let badRight = "None";
         let badLeftCounter = 0;
         let badRightCounter = 0;
         let wasBadLeft = false;
@@ -130,26 +166,32 @@
                 }
 
                 frontLeft = data.counter_left_front_raises ?? 0;
-                frontRight = data.counter_rigt_front_raises ?? 0;
+                frontRight = data.counter_right_front_raises ?? 0;
                 badLeft = data.error_left_front_raises ?? "None";
                 badRight = data.error_right_front_raises ?? "None";
 
+                // Update bad counters
                 if (badLeft !== "None" && !wasBadLeft) {
                     badLeftCounter++;
                     wasBadLeft = true;
-                } else if (!badLeft) {
+                } else if (badLeft === "None") {
                     wasBadLeft = false;
                 }
 
                 if (badRight !== "None" && !wasBadRight) {
                     badRightCounter++;
                     wasBadRight = true;
-                } else if (!badRight) {
+                } else if (badRight === "None") {
                     wasBadRight = false;
                 }
 
+                // Update counter boxes
+                document.getElementById("counterLeft").innerText = frontLeft;
+                document.getElementById("counterRight").innerText = frontRight;
+
+                // Change theme color based on bad form
                 const root = document.documentElement;
-                if (badLeft === "None" || badRight === "None") {
+                if (badLeft !== "None" || badRight !== "None") {
                     root.style.setProperty('--secondary-color', '#000000');
                     root.style.setProperty('--tertiary-color', '#ffffff');
                     document.body.style.backgroundColor = '#8B0000';
@@ -159,12 +201,11 @@
                     document.body.style.backgroundColor = '#1e113a';
                 }
 
-                
-                document.getElementById("statusText").innerText =
-                    `Left Arm Reps: ${frontLeft}\n` +
-                    `Right Arm Reps: ${frontRight}\n` +
-                    `Left Arm Feedback: ${badLeft}\n` +
-                    `Right Arm Feedback: ${badRight}`;
+                const leftFeedback = badLeft !== "None" ? `Left Feedback: ${badLeft}` : "Left Feedback: ";
+                const rightFeedback = badRight !== "None" ? `Right Feedback: ${badRight}` : "Right Feedback:";
+
+                document.getElementById("statusText").innerText = `${leftFeedback}\n${rightFeedback}`;
+
             } catch (err) {
                 console.error("Error fetching status:", err);
             }
@@ -192,12 +233,12 @@
         }
 
         async function handleBackToHome() {
-            await stopFrontRaise();
+            await stopExercise();
             await saveExerciseData();
             window.location.href = '/Home/Index';
         }
 
-        async function stopFrontRaise() {
+        async function stopExercise() {
             try {
                 const response = await fetch("http://127.0.0.1:5000/start", {
                     method: "POST",
@@ -210,7 +251,7 @@
                 const data = await response.json();
                 console.log(data);
             } catch (err) {
-                console.error("Error stopping front raise tracking:", err);
+                console.error("Error stopping front raises tracking:", err);
             }
         }
     </script>

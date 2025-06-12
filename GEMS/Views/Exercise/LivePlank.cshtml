@@ -8,6 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Plank Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <style>
         :root {
             --primary-color: #1e113a;
@@ -30,18 +31,25 @@
         }
 
         .status {
-            font-size: 24px;
-            margin-top: 30px;
+            font-size: 32px;
+            margin-bottom: 20px;
             background-color: var(--tertiary-color);
             color: var(--primary-color);
             display: inline-block;
             padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
-            width: 70%;
-            text-align: left;
+            text-align: center;
             font-weight: bold;
             white-space: pre-line;
+        }
+
+
+        .frame-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .frame-container {
@@ -56,6 +64,23 @@
             border: 3px solid var(--secondary-color);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(82, 243, 234, 0.6);
+        }
+
+        .counter-box {
+            position: absolute;
+            left: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--tertiary-color);
+            color: var(--primary-color);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(82, 243, 234, 0.4);
+            font-size: 40px;
+            font-weight: bold;
+            width: 180px;
+            text-align: center;
+            z-index: 10;
         }
 
         .back-btn, .stop-btn {
@@ -88,15 +113,15 @@
 <body>
     <h2>Plank Tracker Live Feed</h2>
 
-    <!-- Status Box -->
     <div class="status" id="statusText">Loading...</div>
 
-    <!-- Live Frame -->
-    <div class="frame-container">
-        <img id="liveFrame" src="" alt="Live frame not loaded" />
+    <div class="frame-wrapper">
+        <div class="counter-box" id="counterBox">00:00</div>
+        <div class="frame-container">
+            <img id="liveFrame" src="" alt="Live frame not loaded" />
+        </div>
     </div>
 
-    <!-- Back to Home Button -->
     <button class="back-btn" onclick="handleBackToHome()">Back to Home</button>
 
     <script>
@@ -104,11 +129,13 @@
         let totalElapsedSeconds = 0;
         let totalMistakes = 0;
         let counting = false;
-        const exerciseId = 5; // Update this ID based on your DB for Plank
+        const exerciseId = 5;
+        let prevFeedback = "";
 
         function updateTimer() {
             if (counting) {
                 totalElapsedSeconds++;
+                document.getElementById("counterBox").innerText = formatTime(totalElapsedSeconds);
             }
         }
 
@@ -145,14 +172,13 @@
                 const confidence = data.plank_confidence ?? 0;
                 const feedback = data.plank_feedback ?? "";
 
-                // Color change based on form correctness
                 const root = document.documentElement;
                 if (feedback !== "Your plank is correct!" && feedback !== "") {
-                    root.style.setProperty('--secondary-color', '#000000'); // dark red
-                    root.style.setProperty('--tertiary-color', '#ffffff');  // white
-                    document.body.style.backgroundColor = '#8B0000';        // dark red background
+                    root.style.setProperty('--secondary-color', '#000000');
+                    root.style.setProperty('--tertiary-color', '#ffffff');
+                    document.body.style.backgroundColor = '#8B0000';
                 } else {
-                    root.style.setProperty('--secondary-color', '#52f3ea'); // original
+                    root.style.setProperty('--secondary-color', '#52f3ea');
                     root.style.setProperty('--tertiary-color', '#fffef7');
                     document.body.style.backgroundColor = '#1e113a';
                 }
@@ -160,23 +186,25 @@
                 let displayFeedback = "";
                 if (confidence >= 0.95) {
                     displayFeedback = `Feedback: ${feedback}`;
-                } 
-                
+                }
+                else {
+                    displayFeedback = `Feedback: .......`;
+
+                }
+
                 if (confidence >= 0.98) {
-
                     if (feedback !== "Your plank is correct!") {
-                        if (prevFeedback === "Your plank is correct!")
+                        if (prevFeedback === "Your plank is correct!") {
                             totalMistakes++;
+                        }
                     }
-
                     prevFeedback = feedback;
-
                 }
 
                 counting = confidence >= 0.95 && feedback === "Your plank is correct!";
 
                 document.getElementById("statusText").innerText =
-                    `${displayFeedback}\nTime: ${formatTime(totalElapsedSeconds)}`;
+                    `${displayFeedback}`;
 
             } catch (err) {
                 console.error("Error fetching status:", err);
@@ -193,7 +221,7 @@
                     body: JSON.stringify({
                         exerciseId: exerciseId,
                         totalRepsPlayed: totalElapsedSeconds,
-                        totalMistakesMade: totalMistakes 
+                        totalMistakesMade: totalMistakes
                     })
                 });
 
