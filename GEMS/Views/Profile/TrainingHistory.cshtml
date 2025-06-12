@@ -2,7 +2,39 @@
 
 @{
     ViewData["Title"] = "Training History";
+
+    // Group for bar chart (only exercises done more than once)
+    var aggregated = Model.Exercises
+        .GroupBy(e => e.ExerciseName)
+        .Where(g => g.Count() > 1)
+        .Select(g => new
+        {
+            Name = g.Key,
+            TotalReps = g.Sum(e => e.TotalRepsPlayed),
+            TotalMistakes = g.Sum(e => e.TotalMistakesMade)
+        })
+        .ToList();
+
+    var exerciseNamesBar = string.Join(",", aggregated.Select(a => $"'{a.Name}'"));
+    var totalMistakes = string.Join(",", aggregated.Select(a => a.TotalMistakes));
+    var totalCorrect = string.Join(",", aggregated.Select(a => a.TotalReps)); // Correct = TotalReps
+
+    // Frequency chart (all exercises)
+    var frequencyData = Model.Exercises
+        .GroupBy(e => e.ExerciseName)
+        .Select(g => new
+        {
+            Name = g.Key,
+            Count = g.Count()
+        })
+        .ToList();
+
+    var exerciseNamesDonut = string.Join(",", frequencyData.Select(f => $"'{f.Name}'"));
+    var frequencyCounts = string.Join(",", frequencyData.Select(f => f.Count));
 }
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="container mt-5" style="color: #1e113a;">
     <div class="text-center mb-4">
@@ -13,7 +45,60 @@
 
     @if (Model.Exercises.Any())
     {
-        <div class="table-responsive shadow rounded" style="background-color: var(--primary-color);">
+        <!-- Stats in Bento Grid -->
+        <div class="row g-4 mb-5">
+            <!-- Bar Chart -->
+            <div class="col-md-6">
+                <div class="shadow p-3 rounded" style="background-color: #1a1a2e;">
+                    <h5 class="text-center text-light mb-3">Mistakes vs Total Reps</h5>
+                    <canvas id="mistakeChart" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Doughnut Chart -->
+            <div class="col-md-6">
+                <div class="shadow p-3 rounded" style="background-color: #1a1a2e;">
+                    <h5 class="text-center text-light mb-3">Exercise Frequency</h5>
+                    <canvas id="frequencyChart" height="250"></canvas>
+                </div>
+            </div>
+
+            @if (ViewBag.ChatAdvice != null)
+            {
+                <div class="row g-4 mt-4">
+                    <div class="col-12">
+                        <div class="shadow p-4 rounded" style="background-color: #1a1a2e; color: #ffffff;">
+                            <h5 class="mb-3">💡 AI-Powered Fitness Advice</h5>
+                            <ul>
+                                @{
+                                    var adviceText = ViewBag.ChatAdvice.ToString();
+                                    var allLines = adviceText.Split('\n');
+                                    var bulletCount = 0;
+
+                                    for (int i = 1; i < allLines.Length && bulletCount < 5; i++)
+                                    {
+                                        var line = allLines[i].TrimStart('-', '*', '•', ' ').Trim();
+
+                                        if (!string.IsNullOrWhiteSpace(line) && line.Length > 20)
+                                        {
+                                            <li>@line</li>
+                                            bulletCount++;
+                                        }
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+
+        
+
+        <!-- Training Table -->
+        <div class="table-responsive shadow rounded mb-5" style="background-color: var(--primary-color);">
             <table class="table table-bordered" style="color: var(--tertiary-color);">
                 <thead style="background-color: var(--secondary-color); color: var(--primary-color);">
                     <tr>
@@ -28,7 +113,6 @@
                     {
                         <tr>
                             <td>@exercise.ExerciseName</td>
-
                             @if (exercise.ExerciseName == "Planks")
                             {
                                 <td>1 (lasted @exercise.TotalRepsPlayed seconds)</td>
@@ -37,9 +121,6 @@
                             {
                                 <td>@exercise.TotalRepsPlayed</td>
                             }
-
-
-                            
                             <td>@exercise.TotalMistakesMade</td>
                             <td>@exercise.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
                         </tr>
@@ -47,6 +128,89 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Bar Chart Script -->
+        <script>
+            const mistakeCtx = document.getElementById('mistakeChart').getContext('2d');
+            new Chart(mistakeCtx, {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(exerciseNamesBar)],
+                    datasets: [
+                        {
+                            label: 'Total Reps',
+                            data: [@Html.Raw(totalCorrect)],
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                        },
+                        {
+                            label: 'Mistakes',
+                            data: [@Html.Raw(totalMistakes)],
+                            backgroundColor: 'rgba(201, 48, 44, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'white' },
+                            title: {
+                                display: true,
+                                text: 'Exercise',
+                                color: 'white'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'white' },
+                            title: {
+                                display: true,
+                                text: 'Count',
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+
+        <!-- Doughnut Chart Script -->
+        <script>
+            const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+            new Chart(frequencyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(exerciseNamesDonut)],
+                    datasets: [{
+                        label: 'Times Played',
+                        data: [@Html.Raw(frequencyCounts)],
+                        backgroundColor: [
+                            '#343a40', '#495057', '#6c757d', '#adb5bd',
+                            '#1f2937', '#2d3748', '#4a5568', '#718096'
+                        ],
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            },
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        </script>
     }
     else
     {

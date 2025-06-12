@@ -1,3 +1,4 @@
+using GEMS.Controllers;
 using GEMS.Models;
 using GEMS.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -48,6 +49,11 @@ namespace GEMS
             // Add UserManager and SignInManager services
             builder.Services.AddScoped<UserManager<AppUser>>();
             builder.Services.AddScoped<SignInManager<AppUser>>();
+
+            // To Support Calling AI-Models
+            builder.Services.AddHttpClient();
+            builder.Services.AddMemoryCache();
+            builder.Services.AddScoped<ProfileController>(); // optional, not needed unless using DI manually
 
             // Repository services
             builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();

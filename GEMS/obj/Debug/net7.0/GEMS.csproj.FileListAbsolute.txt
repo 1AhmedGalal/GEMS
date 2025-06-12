@@ -249,3 +249,5 @@ D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\runtimes\unix\lib\
 D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+D:\FCIS\Fourth Year\GP\Application\GEMS\GEMS\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
