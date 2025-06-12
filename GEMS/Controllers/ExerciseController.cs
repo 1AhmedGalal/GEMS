@@ -41,7 +41,19 @@ namespace GEMS.Controllers
             _userExerciseRepository.Add(userExercise);
             return Ok(new { message = "Data saved successfully" });
         }
- 
+
+        private async Task<string> SendTriggerToPythonAsync(string triggerValue)
+        {
+            var trigger = new { trigger = triggerValue };
+            var json = JsonConvert.SerializeObject(trigger);
+
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
 
         public ActionResult Countdown(int id = 0)
         {
@@ -54,171 +66,62 @@ namespace GEMS.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Bicep()
-        {
-            var trigger = new { trigger = "bicep-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LiveSquat()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Squat()
-        {
-            var trigger = new { trigger = "squat-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LivePushups()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Pushups()
-        {
-            var trigger = new { trigger = "pushup-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
 
         public ActionResult LivePullups()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Pullups()
-        {
-            var trigger = new { trigger = "pullup-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+       
 
         public ActionResult LiveLegRaises()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> LegRaises()
-        {
-            var trigger = new { trigger = "leg_raise-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LiveFrontRaises()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> FrontRaises()
-        {
-            var trigger = new { trigger = "front_raise-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LiveBenchPress()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> BenchPress()
-        {
-            var trigger = new { trigger = "bench-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LiveJumping()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Jumping()
-        {
-            var trigger = new { trigger = "jumping-rule-based" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LiveClassification()
         {
             return View();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Classification()
-        {
-            var trigger = new { trigger = "classification" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json"); // ✅ FIXED
-            }
-        }
+        
 
         public ActionResult LivePlank()
         {
@@ -226,18 +129,75 @@ namespace GEMS.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> Bicep()
+        {
+            var result = await SendTriggerToPythonAsync("bicep-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Squat()
+        {
+            var result = await SendTriggerToPythonAsync("squat-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Pushups()
+        {
+            var result = await SendTriggerToPythonAsync("pushup-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Pullups()
+        {
+            var result = await SendTriggerToPythonAsync("pullup-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> LegRaises()
+        {
+            var result = await SendTriggerToPythonAsync("leg_raise-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> FrontRaises()
+        {
+            var result = await SendTriggerToPythonAsync("front_raise-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> BenchPress()
+        {
+            var result = await SendTriggerToPythonAsync("bench-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Jumping()
+        {
+            var result = await SendTriggerToPythonAsync("jumping-rule-based");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Classification()
+        {
+            var result = await SendTriggerToPythonAsync("classification");
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
         public async Task<ActionResult> Plank()
         {
-            var trigger = new { trigger = "plank-correction" };
-            var json = JsonConvert.SerializeObject(trigger);
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://127.0.0.1:5000/start", content);
-                var result = await response.Content.ReadAsStringAsync();
-                return Content(result, "application/json");
-            }
+            var result = await SendTriggerToPythonAsync("plank-correction");
+            return Content(result, "application/json");
         }
+
 
 
     }
