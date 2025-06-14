@@ -80,12 +80,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Profile/DetailedAdvice.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxEZXRhaWxlZEFkdmljZS5jc2h0bWw=
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Performance/AskQuestion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyZm9ybWFuY2VcQXNrUXVlc3Rpb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Profile/TrainingHistory.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxUcmFpbmluZ0hpc3RvcnkuY3NodG1s
+[D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Performance/TrainingHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVyZm9ybWFuY2VcVHJhaW5pbmdIaXN0b3J5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/FCIS/Fourth Year/GP/Application/GEMS/GEMS/Views/Shared/Error.cshtml]

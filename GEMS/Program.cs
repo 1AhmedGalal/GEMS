@@ -53,7 +53,7 @@ namespace GEMS
             // To Support Calling AI-Models
             builder.Services.AddHttpClient();
             builder.Services.AddMemoryCache();
-            builder.Services.AddScoped<ProfileController>(); // optional, not needed unless using DI manually
+            builder.Services.AddScoped<PerformanceController>(); // optional, not needed unless using DI manually
 
             // Repository services
             builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();

@@ -36,10 +36,23 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+    .table-row-hidden {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    }
+
+    .table-row-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
 <div class="container mt-5" style="color: #1e113a;">
     <div class="text-center mb-4">
         <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 5px;">
-            Training History for @Model.Username
+            Training History & Stats for @Model.Username
         </h2>
     </div>
 
@@ -86,34 +99,49 @@
                                 }
                             }
                         </ul>
-                        <button id="more-info-btn" class="btn mt-3 d-block mx-auto fw-bold"
+                        <button id="more-info-btn" class="btn mt-3 d-block mx-auto fw-bold table-toggle-btn"
                                 style="background-color: var(--secondary-color); color: black; border: none;">
-                            Need More Info?
+                            Have A Question?
                         </button>
-
                     </div>
                 </div>
             }
 
             <script>
                 document.getElementById('more-info-btn').addEventListener('click', function () {
-                    
-
                     setTimeout(() => {
-                        window.location.href = '@Url.Action("DetailedAdvice", "Profile")';
+                        window.location.href = '@Url.Action("AskQuestion", "Performance")';
                     }, 800);
                 });
             </script>
 
+            <!-- Toggle Table Button -->
+            <button id="toggle-table-btn" class="btn mt-4 d-block mx-auto fw-bold table-toggle-btn"
+                    style="background-color: #1a1a2e; color: white; border: none;">
+                Show Training Table
+            </button>
 
+            <style>
+                .table-toggle-btn {
+                    transition: all 0.3s ease;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                }
 
+                .table-toggle-btn:hover {
+                        background-color: #343a40; /* slightly lighter dark */
+                        transform: scale(1.05); /* zoom effect */
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* subtle shadow */
+                }
+            </style>
         </div>
 
         
 
-        <!-- Training Table -->
-        <div class="table-responsive shadow rounded mb-5" style="background-color: var(--primary-color);">
-            <table class="table table-bordered" style="color: var(--tertiary-color);">
+        <!-- Training Table (Hidden by Default) -->
+        <div id="training-table-container" class="table-responsive shadow rounded mb-5"
+             style="background-color: var(--primary-color); display: none;">
+            <table class="table table-bordered training-table" style="color: var(--tertiary-color);">
                 <thead style="background-color: var(--secondary-color); color: var(--primary-color);">
                     <tr>
                         <th>Exercise</th>
@@ -125,7 +153,7 @@
                 <tbody>
                     @foreach (var exercise in Model.Exercises)
                     {
-                        <tr>
+                        <tr class="table-row-hidden">
                             <td>@exercise.ExerciseName</td>
                             @if (exercise.ExerciseName == "Planks")
                             {
@@ -222,6 +250,32 @@
                             position: 'bottom'
                         }
                     }
+                }
+            });
+        </script>
+
+        <!-- Training Table Animation Script -->
+        <script>
+            document.getElementById('toggle-table-btn').addEventListener('click', function () {
+                const container = document.getElementById('training-table-container');
+                const rows = container.querySelectorAll('.table-row-hidden');
+                let delay = 0;
+
+                if (container.style.display === 'none') {
+                    container.style.display = 'block';
+                    rows.forEach((row, index) => {
+                        setTimeout(() => {
+                            row.classList.add('table-row-visible');
+                        }, delay);
+                        delay += 100; // 100ms delay between rows
+                    });
+                    this.textContent = "Hide Training Table";
+                } else {
+                    rows.forEach(row => row.classList.remove('table-row-visible'));
+                    setTimeout(() => {
+                        container.style.display = 'none';
+                    }, 500); // Wait for animation to complete
+                    this.textContent = "Show Training Table";
                 }
             });
         </script>

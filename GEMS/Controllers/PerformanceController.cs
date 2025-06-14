@@ -11,7 +11,7 @@ using Microsoft.Identity.Client;
 
 namespace GEMS.Controllers
 {
-    public class ProfileController : Controller
+    public class PerformanceController : Controller
     {
         private readonly IUserExerciseRepository _userExerciseRepository;
         private readonly IExerciseRepository _exerciseRepository;
@@ -20,7 +20,7 @@ namespace GEMS.Controllers
         private readonly IMemoryCache _cache;
         private readonly string _apiKey;
 
-        public ProfileController(
+        public PerformanceController(
             IUserExerciseRepository userExerciseRepository,
             IExerciseRepository exerciseRepository,
             UserManager<AppUser> userManager,
@@ -37,6 +37,7 @@ namespace GEMS.Controllers
         }
 
         private string ExerciseBreakdown(List<UserExerciseWithName> exercisesWithNames) => string.Join("\n", exercisesWithNames.Select(e => $"- {e.ExerciseName}: {e.TotalRepsPlayed} reps, {e.TotalMistakesMade} mistakes"));
+
         private async Task<string> AskGroq(string prompt)
         {
             var client = _httpClientFactory.CreateClient();
@@ -110,7 +111,7 @@ Don't use signs like '+' or '*' or '**' even if you are trying to format text.
         }
 
         [HttpGet]
-        public IActionResult DetailedAdvice()
+        public IActionResult AskQuestion()
         {
             return View();
         }
@@ -118,7 +119,7 @@ Don't use signs like '+' or '*' or '**' even if you are trying to format text.
         [HttpPost]
         public async Task<IActionResult> DetailedAdvice(string userMessage)
         {
-            userMessage = $@"\n
+            userMessage += $@"\n
 Note There is only these exercise:
 jumping jacks
 bicep curl
