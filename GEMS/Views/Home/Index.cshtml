@@ -34,7 +34,6 @@
         margin-top: 30px;
     }
 
-    /* Left Grid */
     .left-panel {
         display: flex;
         flex-direction: column;
@@ -91,7 +90,6 @@
             transform: translateY(-3px);
         }
 
-    /* Right Panel */
     .right-panel {
         display: flex;
         flex-direction: column;
@@ -135,7 +133,6 @@
         line-height: 1.4;
         font-weight: 600;
     }
-
 </style>
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -143,7 +140,7 @@
     <div class="main-container">
         <div class="content-grid">
 
-            <!-- Left Side -->
+            <!-- Left Panel -->
             <div class="left-panel">
                 <a class="main-button" href="@Url.Action("Countdown", "Exercise", new { id = 0 })">Start General Training</a>
 
@@ -160,14 +157,14 @@
                 </div>
             </div>
 
-            <!-- Right Side -->
+            <!-- Right Panel -->
             <div class="right-panel">
                 <div class="tile-row">
-                    <!-- Camera/Video Tile -->
-                    <div class="tile" onclick="document.getElementById('videoInput').click()">
-                        <div class="tile-icon">📷</div>
-                        <div class="tile-label">Choose Camera<br />or Explore Video</div>
-                        <input type="file" id="videoInput" accept="video/*" style="display: none;" />
+                    <!-- Camera/Video Toggle Tile -->
+                    <div class="tile" id="cameraToggleTile" onclick="toggleCameraVideoMode()">
+                        <div class="tile-icon" id="tileIcon">📷</div>
+                        <div class="tile-label" id="tileLabel">Select Camera<br />or Upload Video</div>
+                        <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="handleVideoSelection(event)" />
                     </div>
 
                     <!-- History Tile -->
@@ -190,3 +187,67 @@ else
         </p>
     </div>
 }
+
+<script>
+    let isCameraSelected = true; // default mode
+
+    function toggleCameraVideoMode() {
+        if (isCameraSelected) {
+            // Camera is selected → switch to file picker for video
+            document.getElementById('videoInput').click();
+        } else {
+            // Switch back to camera mode
+            isCameraSelected = true;
+            updateTileDisplay();
+            sendTriggerToPython("camera-mode", "webcam", null);
+        }
+    }
+
+    function handleVideoSelection(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const filePath = file.name; // Browsers do not allow full file paths
+            isCameraSelected = false;
+            updateTileDisplay();
+
+            sendTriggerToPython("camera-mode", "video", filePath);
+        }
+    }
+
+    function updateTileDisplay() {
+        const label = document.getElementById("tileLabel");
+        const icon = document.getElementById("tileIcon");
+
+        if (isCameraSelected) {
+            label.innerHTML = "Camera is selected<br />Click to select Video";
+            icon.innerText = "📷";
+        } else {
+            label.innerHTML = "Video is selected<br />Click to select Camera";
+            icon.innerText = "🎥";
+        }
+    }
+
+    async function sendTriggerToPython(trigger, mode, filePath) {
+        const payload = {
+            trigger: trigger,
+            "selected-camera-mode": mode
+        };
+
+        if (filePath) {
+            payload["file-path"] = filePath;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.text();
+            console.log("Python response:", data);
+        } catch (error) {
+            console.error("Error sending trigger:", error);
+        }
+    }
+</script>
