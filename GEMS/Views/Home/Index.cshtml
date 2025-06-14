@@ -193,24 +193,22 @@ else
 
     function toggleCameraVideoMode() {
         if (isCameraSelected) {
-            // Camera is selected → switch to file picker for video
-            document.getElementById('videoInput').click();
+            const videoInput = document.getElementById('videoInput');
+            videoInput.value = "";
+            videoInput.click();
         } else {
-            // Switch back to camera mode
             isCameraSelected = true;
             updateTileDisplay();
-            sendTriggerToPython("camera-mode", "webcam", null);
+            sendTriggerToPython("camera-mode-selection", "webcam", null); // FIXED trigger
         }
     }
 
     function handleVideoSelection(event) {
         const file = event.target.files[0];
         if (file) {
-            const filePath = file.name; // Browsers do not allow full file paths
             isCameraSelected = false;
             updateTileDisplay();
-
-            sendTriggerToPython("camera-mode", "video", filePath);
+            sendTriggerToPython("camera-mode-selection", "video", file); // FIXED trigger
         }
     }
 
@@ -227,21 +225,19 @@ else
         }
     }
 
-    async function sendTriggerToPython(trigger, mode, filePath) {
-        const payload = {
-            trigger: trigger,
-            "selected-camera-mode": mode
-        };
+    async function sendTriggerToPython(trigger, mode, file) {
+        const formData = new FormData();
+        formData.append("trigger", trigger);
+        formData.append("camera-mode", mode);
 
-        if (filePath) {
-            payload["file-path"] = filePath;
+        if (file) {
+            formData.append("video-file", file);
         }
 
         try {
             const response = await fetch("http://127.0.0.1:5000/start", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: formData
             });
 
             const data = await response.text();
