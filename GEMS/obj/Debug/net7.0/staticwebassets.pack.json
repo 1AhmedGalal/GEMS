@@ -249,6 +249,42 @@
       "PackagePath": "staticwebassets\\photos\\body.jpeg"
     },
     {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\benchpress.mp4",
+      "PackagePath": "staticwebassets\\videos\\benchpress.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\bicepcurl.mp4",
+      "PackagePath": "staticwebassets\\videos\\bicepcurl.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\frontraise.mp4",
+      "PackagePath": "staticwebassets\\videos\\frontraise.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\jumpingjack.mp4",
+      "PackagePath": "staticwebassets\\videos\\jumpingjack.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\legraise.mp4",
+      "PackagePath": "staticwebassets\\videos\\legraise.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\plank.mp4",
+      "PackagePath": "staticwebassets\\videos\\plank.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\pullup.mp4",
+      "PackagePath": "staticwebassets\\videos\\pullup.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\pushup.mp4",
+      "PackagePath": "staticwebassets\\videos\\pushup.mp4"
+    },
+    {
+      "Id": "D:\\FCIS\\Fourth Year\\GP\\Application\\GEMS\\GEMS\\wwwroot\\videos\\squat.mp4",
+      "PackagePath": "staticwebassets\\videos\\squat.mp4"
+    },
+    {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.GEMS.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

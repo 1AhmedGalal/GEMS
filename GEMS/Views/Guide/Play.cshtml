@@ -1,5 +1,167 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Exercise Guide";
 }
+
+<style>
+    :root {
+        --primary-color: #1e113a;
+        --secondary-color: #52f3ea;
+        --tertiary-color: #fffef7;
+        --accent-color: #52f3ea;
+    }
+
+    body {
+        background-color: var(--primary-color);
+        color: var(--tertiary-color);
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        gap: 40px;
+    }
+
+    .page-title {
+        font-size: 36px;
+        font-weight: bold;
+        text-align: center;
+        color: var(--tertiary-color);
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .content-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 60px;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .left-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .exercise-button {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border: none;
+        padding: 18px 30px;
+        font-size: 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        min-width: 140px;
+        text-align: center;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.3s;
+        box-shadow: 0 4px 12px rgba(82, 243, 234, 0.2);
+    }
+
+        .exercise-button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+    .right-panel {
+        background: rgba(255, 255, 255, 0.07);
+        border: 2px solid var(--secondary-color);
+        border-radius: 20px;
+        padding: 20px;
+        width: 640px;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .video-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        text-align: center;
+        color: var(--tertiary-color);
+    }
+
+    video {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 12px;
+    }
+
+    .placeholder-text {
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        margin-top: 60px;
+    }
+</style>
+
+<div class="main-container">
+    <div class="page-title">🏋️‍♂️ Exercise Guidance Center</div>
+
+    <div class="content-wrapper">
+        <!-- Left Panel with Exercise Buttons -->
+        <div class="left-panel">
+            <button class="exercise-button" onclick="playExerciseVideo('squat', 'Squats')">Squats</button>
+            <button class="exercise-button" onclick="playExerciseVideo('pushup', 'Push Ups')">Push Ups</button>
+            <button class="exercise-button" onclick="playExerciseVideo('benchpress', 'Bench Press')">Bench Press</button>
+            <button class="exercise-button" onclick="playExerciseVideo('plank', 'Plank')">Plank</button>
+            <button class="exercise-button" onclick="playExerciseVideo('bicepcurl', 'Bicep Curl')">Bicep Curl</button>
+            <button class="exercise-button" onclick="playExerciseVideo('frontraise', 'Front Raise')">Front Raise</button>
+            <button class="exercise-button" onclick="playExerciseVideo('legraise', 'Leg Raise')">Leg Raise</button>
+            <button class="exercise-button" onclick="playExerciseVideo('pullup', 'Pull Up')">Pull Up</button>
+            <button class="exercise-button" onclick="playExerciseVideo('jumpingjack', 'Jumping Jack')">Jumping Jack</button>
+        </div>
+
+        <!-- Right Panel with Video Player -->
+        <div class="right-panel" id="videoContainer">
+            <div class="video-title" id="videoTitle">Select an Exercise to View the Guide</div>
+            <div class="placeholder-text" id="placeholderText">🏃‍♀️ Waiting for your selection...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playExerciseVideo(exerciseName, displayName) {
+        const videoPath = `/videos/${exerciseName}.mp4`;
+        const videoContainer = document.getElementById('videoContainer');
+        const videoTitle = document.getElementById('videoTitle');
+        const placeholderText = document.getElementById('placeholderText');
+
+        // Remove any existing video element
+        const existingVideo = videoContainer.querySelector('video');
+        if (existingVideo) {
+            existingVideo.pause();       // Stop the video
+            existingVideo.src = "";      // Clear the source
+            existingVideo.load();        // Reset the video element
+            existingVideo.remove();      // Remove it from the DOM
+        }
+
+        // Update title and remove placeholder
+        videoTitle.textContent = displayName + " Guide";
+        placeholderText.style.display = 'none';
+
+        // Create new video element
+        const newVideo = document.createElement('video');
+        newVideo.controls = true;
+        newVideo.autoplay = true;
+
+        const source = document.createElement('source');
+        source.src = videoPath;
+        source.type = 'video/mp4';
+
+        newVideo.appendChild(source);
+        videoContainer.appendChild(newVideo);
+    }
+</script>
+
