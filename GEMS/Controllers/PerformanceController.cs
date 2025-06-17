@@ -113,14 +113,23 @@ Don't use signs like '+' or '*' or '**' even if you are trying to format text.
         [HttpGet]
         public IActionResult AskQuestion()
         {
+            TempData["ChatHistory"] = new List<string>(); // Reset on GET
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> AskQuestion(string userMessage)
         {
-            userMessage += $@"\n
-Note There is only these exercise:
+            // Prepare ChatHistory
+            List<string> chatHistory = TempData["ChatHistory"] as List<string> ?? new List<string>();
+
+            // Add User Message
+            chatHistory.Add($">User: {userMessage}");
+
+            // Append system instruction to control AI behavior
+            string modifiedMessage = userMessage + @"
+
+Note There is only these exercise [so don't recommend other ones]:
 jumping jacks
 bicep curl
 squat
@@ -133,9 +142,20 @@ pull ups
 
 Note: answer with a warning message if I asked you something not related to sport/exercise/training and similar topics
 ";
-            var reply = await AskGroq(userMessage);
-            ViewBag.GroqResponse = reply;
+
+            // Get AI Response
+            var reply = await AskGroq(modifiedMessage);
+
+            // Add AI response
+            chatHistory.Add($">AI: {reply}");
+
+            // Save chat history back
+            TempData["ChatHistory"] = chatHistory;
+            TempData.Keep("ChatHistory"); // Important to preserve for next request
+
+            ViewBag.ChatHistory = chatHistory;
             return View();
         }
+
     }
 }

@@ -178,10 +178,16 @@
                         <div class="tile-label">History & Stats</div>
                     </a>
 
+                    <!-- Chatting Tile -->
+                    <a class="tile" href="@Url.Action("AskQuestion", "Performance")">
+                        <div class="tile-icon">💬</div>
+                        <div class="tile-label">Chat With GEMS</div>
+                    </a>
+
                     <!-- Guide With Exercise Tile -->
                     <a class="tile" href="@Url.Action("Play", "Guide")">
-                        <div class="tile-icon">❓</div>
-                        <div class="tile-label">Need Exercise Guidance?</div>
+                        <div class="tile-icon">💪</div>
+                        <div class="tile-label">Step-by-Step Exercise Tutorials</div>
                     </a>
 
 
@@ -194,11 +200,14 @@
 else
 {
     <div class="main-container">
-        <h1 style="font-size: 38px; color: var(--tertiary-color); text-align: center;">Welcome to GEMS</h1>
-        <p style="font-size: 20px; margin-top: 10px; color: rgba(255,255,255,0.8); text-align: center;">
+        <h1 style="font-size: 88px; color: var(--tertiary-color); text-align: center;">
+            Welcome to <span style="color: var(--secondary-color); font-weight: bold;">GEMS</span>
+        </h1>
+        <p style="font-size: 30px; margin-top: 10px; color: rgba(255,255,255,0.8); text-align: center;">
             Please log in to begin your training journey with guided exercises, history tracking, and more.
         </p>
     </div>
+
 }
 
 <script>

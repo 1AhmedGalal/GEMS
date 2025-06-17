@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Training History";
+    ViewData["HideFooter"] = true; // Hide footer for this view
 
     // Group for bar chart (only exercises done more than once)
     var aggregated = Model.Exercises
@@ -37,6 +38,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+    body {
+        background-color: #0f1626;
+        color: #ffffff;
+    }
+
     .table-row-hidden {
         opacity: 0;
         transform: translateY(-10px);
@@ -47,14 +53,27 @@
         opacity: 1;
         transform: translateY(0);
     }
+
+    .table-toggle-btn {
+        transition: all 0.3s ease;
+        padding: 12px 24px;
+        border-radius: 8px;
+    }
+
+        .table-toggle-btn:hover {
+            background-color: #343a40;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
 </style>
 
-<div class="container mt-5" style="color: #1e113a;">
+<div class="container mt-5">
     <div class="text-center mb-4">
-        <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 5px;">
+        <h2 style="color: #52f3ea; font-size: 38px; display: inline-block; padding-bottom: 5px;">
             Training History & Stats for @Model.Username
         </h2>
     </div>
+
 
     @if (Model.Exercises.Any())
     {
@@ -62,7 +81,7 @@
         <div class="row g-4 mb-5">
             <!-- Bar Chart -->
             <div class="col-md-6">
-                <div class="shadow p-3 rounded" style="background-color: #1a1a2e;">
+                <div class="shadow p-3 rounded" style="background-color: #2a2a40;">
                     <h5 class="text-center text-light mb-3">Mistakes vs Total Reps</h5>
                     <canvas id="mistakeChart" height="250"></canvas>
                 </div>
@@ -70,7 +89,7 @@
 
             <!-- Doughnut Chart -->
             <div class="col-md-6">
-                <div class="shadow p-3 rounded" style="background-color: #1a1a2e;">
+                <div class="shadow p-3 rounded" style="background-color: #2a2a40;">
                     <h5 class="text-center text-light mb-3">Exercise Frequency</h5>
                     <canvas id="frequencyChart" height="250"></canvas>
                 </div>
@@ -79,7 +98,7 @@
             @if (ViewBag.ChatAdvice != null)
             {
                 <div class="row g-4 mt-4">
-                    <div id="ai-advice-area" class="col-12 shadow p-4 rounded" style="background-color: #1a1a2e; color: #ffffff; position: relative;">
+                    <div id="ai-advice-area" class="col-12 shadow p-4 rounded" style="background-color: #2a2a40; color: #ffffff;">
                         <h5 class="mb-3">💡 AI-Powered Fitness Advice</h5>
                         <ul>
                             @{
@@ -100,7 +119,7 @@
                             }
                         </ul>
                         <button id="more-info-btn" class="btn mt-3 d-block mx-auto fw-bold table-toggle-btn"
-                                style="background-color: var(--secondary-color); color: black; border: none;">
+                                style="background-color: #52f3ea; color: black; border: none;">
                             Have A Question?
                         </button>
                     </div>
@@ -117,32 +136,16 @@
 
             <!-- Toggle Table Button -->
             <button id="toggle-table-btn" class="btn mt-4 d-block mx-auto fw-bold table-toggle-btn"
-                    style="background-color: #1a1a2e; color: white; border: none;">
+                    style="background-color: #2a2a40; color: white; border: none;">
                 Show Training Table
             </button>
-
-            <style>
-                .table-toggle-btn {
-                    transition: all 0.3s ease;
-                    padding: 12px 24px;
-                    border-radius: 8px;
-                }
-
-                .table-toggle-btn:hover {
-                        background-color: #343a40; /* slightly lighter dark */
-                        transform: scale(1.05); /* zoom effect */
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* subtle shadow */
-                }
-            </style>
         </div>
-
-        
 
         <!-- Training Table (Hidden by Default) -->
         <div id="training-table-container" class="table-responsive shadow rounded mb-5"
-             style="background-color: var(--primary-color); display: none;">
-            <table class="table table-bordered training-table" style="color: var(--tertiary-color);">
-                <thead style="background-color: var(--secondary-color); color: var(--primary-color);">
+             style="background-color: #2a2a40; display: none;">
+            <table class="table table-bordered training-table" style="color: #ffffff;">
+                <thead style="background-color: #52f3ea; color: #0f1626;">
                     <tr>
                         <th>Exercise</th>
                         <th>Reps</th>
@@ -267,14 +270,14 @@
                         setTimeout(() => {
                             row.classList.add('table-row-visible');
                         }, delay);
-                        delay += 100; // 100ms delay between rows
+                        delay += 100;
                     });
                     this.textContent = "Hide Training Table";
                 } else {
                     rows.forEach(row => row.classList.remove('table-row-visible'));
                     setTimeout(() => {
                         container.style.display = 'none';
-                    }, 500); // Wait for animation to complete
+                    }, 500);
                     this.textContent = "Show Training Table";
                 }
             });
@@ -282,7 +285,7 @@
     }
     else
     {
-        <div class="alert text-center shadow p-3 rounded" style="background-color: var(--accent-color); color: var(--primary-color);">
+        <div class="alert text-center shadow p-3 rounded" style="background-color: #52f3ea; color: #0f1626;">
             No training history found. Start exercising to track your progress!
         </div>
     }

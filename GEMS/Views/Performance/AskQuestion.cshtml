@@ -1,65 +1,121 @@
 ﻿@using System.Text.RegularExpressions
 @{
     ViewData["Title"] = "Ask Questions";
+    ViewData["HideFooter"] = true; // Hide footer for this view
 
-    string ProcessedGroqResponse = "";
-
-    if (ViewBag.GroqResponse != null)
-    {
-        // Replace **text** with <strong>text</strong> using Regex
-        string rawResponse = ViewBag.GroqResponse.ToString();
-        ProcessedGroqResponse = Regex.Replace(rawResponse, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
-    }
+    List<string> chatHistory = ViewBag.ChatHistory as List<string> ?? new List<string>();
 }
 
-<div class="container mt-5" style="background-color: #1a1a2e; color: #fff; min-height: 90vh; padding: 20px; border-radius: 12px;">
-    <h2 class="mb-4 text-center" style="color: var(--accent-color); font-weight: bold;">💬 Chat with GEMS</h2>
-
-    <div class="chat-box mb-4" style="max-height: 60vh; overflow-y: auto; padding: 10px; background-color: #0f1626; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-        @if (ViewBag.UserMessage != null)
-        {
-            <div class="user-message p-3 mb-3">
-                <strong>You:</strong>
-                <p>@ViewBag.UserMessage</p>
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(ProcessedGroqResponse))
-        {
-            <div class="ai-message p-3 mb-3">
-                <pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0;">@Html.Raw(ProcessedGroqResponse)</pre>
-            </div>
-        }
-    </div>
-
-    <form method="post" class="d-flex gap-2" id="chat-form">
-        <textarea name="userMessage" id="userMessage" class="form-control" rows="2" placeholder="Ask anything about your exercise..."></textarea>
-        <button type="submit" class="btn chat-send-btn">Send</button>
-    </form>
-</div>
-
 <style>
+    :root {
+        --primary-color: #0f1626;
+        --accent-color: #52f3ea;
+    }
+
+    body {
+        background-color: var(--primary-color);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .chat-container {
+        background-color: var(--primary-color);
+        color: #fff;
+        min-height: calc(100vh - 140px); /* adjust for header */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 10px;
+    }
+
+        .chat-container h2 {
+            margin-top: 0;
+        }
+
+    .chat-box {
+        width: 100%;
+        max-width: 800px;
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #0f1626;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        margin-bottom: 10px;
+    }
+
+        /* Scrollbar Styling */
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-track {
+            background: #0f1626;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #3b3f75;
+            border-radius: 4px;
+        }
+
+    .chat-box {
+        scrollbar-width: thin;
+        scrollbar-color: #3b3f75 #0f1626;
+    }
+
     .user-message, .ai-message {
-        background-color: #2a2e5b;
         border-radius: 10px;
         max-width: 75%;
         color: #fff;
-        font-size: 1.2rem; /* Bigger chat text */
+        font-size: 1.2rem;
+        padding: 10px;
+        margin-bottom: 10px;
     }
 
     .user-message {
         background-color: #2a2e5b;
         margin-left: auto;
+        text-align: right;
     }
 
     .ai-message {
         background-color: #3b3f75;
         margin-right: auto;
+        text-align: left;
     }
 
-        .user-message strong, .ai-message strong {
-            font-size: 1.3rem; /* Bigger "You:" and "AI Coach:" labels */
+        .user-message strong,
+        .ai-message strong {
+            font-size: 1.3rem;
         }
+
+        .ai-message strong {
+            color: #00ffcc;
+        }
+
+    form#chat-form {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        gap: 10px;
+        position: sticky;
+        bottom: 0;
+        background-color: var(--primary-color);
+        padding: 10px 0;
+        z-index: 10;
+    }
 
     textarea#userMessage {
         resize: none;
@@ -67,8 +123,9 @@
         color: #fff;
         border: none;
         border-radius: 10px;
-        font-size: 1.1rem; /* Bigger input text */
+        font-size: 1.1rem;
         padding: 10px;
+        width: 100%;
     }
 
     .chat-send-btn {
@@ -87,6 +144,37 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
 </style>
+
+<div class="main-content chat-container">
+    <h2 class="mb-4 text-center" style="color: var(--accent-color); font-weight: bold;">💬 Chat with GEMS</h2>
+
+    <div class="chat-box">
+        @if (chatHistory != null && chatHistory.Count > 0)
+        {
+            foreach (var message in chatHistory)
+            {
+                if (message.StartsWith(">User:"))
+                {
+                    <div class="user-message">
+                        <strong>@message.Replace(">User:", "").Trim()</strong>
+                    </div>
+                }
+                else if (message.StartsWith(">AI:"))
+                {
+                    var aiMsg = Regex.Replace(message.Replace(">AI:", "").Trim(), @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+                    <div class="ai-message">
+                        <pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0;">@Html.Raw(aiMsg)</pre>
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <form method="post" id="chat-form">
+        <textarea name="userMessage" id="userMessage" rows="2" placeholder="Ask anything about your exercise..."></textarea>
+        <button type="submit" class="btn chat-send-btn">Send</button>
+    </form>
+</div>
 
 <script>
     const textarea = document.getElementById('userMessage');

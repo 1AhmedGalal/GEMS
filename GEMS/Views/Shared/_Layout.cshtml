@@ -22,7 +22,7 @@
         }
 
         .navbar-brand {
-            font-size: 2.5rem; /* Increased font size */
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--secondary-color) !important;
             letter-spacing: 1px;
@@ -33,24 +33,13 @@
             font-size: 1.1rem;
             color: var(--tertiary-color) !important;
             margin: 0 10px;
+            position: relative;
+            transition: transform 0.2s ease, color 0.2s ease;
         }
 
             .nav-link:hover {
                 color: var(--accent-color) !important;
             }
-
-        /* Footer Styling */
-        footer {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            padding: 20px 0;
-        }
-
-        /* Button Animation */
-        .nav-link {
-            position: relative;
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
 
             .nav-link:active {
                 transform: scale(0.95);
@@ -71,6 +60,13 @@
                 width: 100%;
                 left: 0;
             }
+
+        /* Footer Styling */
+        footer {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 20px 0;
+        }
 
         /* Body Background */
         body {
@@ -147,17 +143,23 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container text-center">
-            &copy; 2025 - GEMS Fitness Tracker
-        </div>
-    </footer>
+    <!-- Conditionally hide footer -->
+    @if (!(ViewData["HideFooter"]?.Equals(true) ?? false))
+    {
+        <footer class="border-top footer text-muted">
+            <div class="container text-center">
+                &copy; 2025 - GEMS Fitness Tracker
+            </div>
+        </footer>
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
