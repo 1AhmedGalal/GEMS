@@ -104,6 +104,11 @@
         justify-content: center;
     }
 
+    .tile:hover .tile-icon,
+    .tile:hover .tile-label {
+        color: var(--secondary-color);
+    }
+
     .tile {
         background: rgba(255, 255, 255, 0.07);
         border: 2px solid var(--secondary-color);
@@ -163,7 +168,7 @@
                     <!-- Camera/Video Toggle Tile -->
                     <div class="tile" id="cameraToggleTile" onclick="toggleCameraVideoMode()">
                         <div class="tile-icon" id="tileIcon">📷</div>
-                        <div class="tile-label" id="tileLabel">Select Camera<br />or Upload Video</div>
+                        <div class="tile-label" id="tileLabel">Camera is Selected<br />[Click to select Video]</div>
                         <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="handleVideoSelection(event)" />
                     </div>
 
@@ -189,17 +194,19 @@ else
 }
 
 <script>
-    let isCameraSelected = true; // default mode
+    let isCameraSelected = true; // Default: Camera mode
+    let pollingInterval = null;
+    let videoBeingUploaded = true;
 
     function toggleCameraVideoMode() {
         if (isCameraSelected) {
             const videoInput = document.getElementById('videoInput');
-            videoInput.value = "";
+            videoInput.value = ""; // Clear previous file
             videoInput.click();
         } else {
             isCameraSelected = true;
-            updateTileDisplay();
-            sendTriggerToPython("camera-mode-selection", "webcam", null); // FIXED trigger
+            updateTileDisplay(); // Immediately update UI
+            sendTriggerToPython("camera-mode-selection", "webcam", null);
         }
     }
 
@@ -207,20 +214,23 @@ else
         const file = event.target.files[0];
         if (file) {
             isCameraSelected = false;
-            updateTileDisplay();
-            sendTriggerToPython("camera-mode-selection", "video", file); // FIXED trigger
+            updateTileDisplay(); // Show "Video is selected" immediately
+            sendTriggerToPython("camera-mode-selection", "video", file);
         }
     }
 
-    function updateTileDisplay() {
+    function updateTileDisplay(videoBeingUploaded =true) {
         const label = document.getElementById("tileLabel");
         const icon = document.getElementById("tileIcon");
 
         if (isCameraSelected) {
-            label.innerHTML = "Camera is selected<br />Click to select Video";
+            label.innerHTML = "Camera is selected<br />[Click to select Video]";
             icon.innerText = "📷";
+        } else if (videoBeingUploaded) {
+            label.innerHTML = "Uploading Video<br />[Click to select Camera]";
+            icon.innerText = "⏳";
         } else {
-            label.innerHTML = "Video is selected<br />Click to select Camera";
+            label.innerHTML = "Video is selected<br />[Click to select Camera]";
             icon.innerText = "🎥";
         }
     }
@@ -242,8 +252,36 @@ else
 
             const data = await response.text();
             console.log("Python response:", data);
+
+            if (mode === "video") {
+                // Start polling only after sending video
+                startPollingVideoStatus();
+            }
         } catch (error) {
             console.error("Error sending trigger:", error);
         }
+    }
+
+    function startPollingVideoStatus() {
+        if (pollingInterval) clearInterval(pollingInterval);
+
+        pollingInterval = setInterval(async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/status");
+                const statusData = await response.json();
+                console.log("Status:", statusData);
+
+                const videoBeingUploaded = statusData.video_being_uploaded;
+                updateTileDisplay(videoBeingUploaded);
+
+                if (!videoBeingUploaded) {
+                    // Stop polling when upload finishes
+                    clearInterval(pollingInterval);
+                    pollingInterval = null;
+                }
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        }, 3000); // Poll every 3 seconds
     }
 </script>

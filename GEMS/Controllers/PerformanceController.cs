@@ -117,7 +117,7 @@ Don't use signs like '+' or '*' or '**' even if you are trying to format text.
         }
 
         [HttpPost]
-        public async Task<IActionResult> DetailedAdvice(string userMessage)
+        public async Task<IActionResult> AskQuestion(string userMessage)
         {
             userMessage += $@"\n
 Note There is only these exercise:
@@ -130,6 +130,8 @@ planks
 front raises
 leg raises
 pull ups
+
+Note: answer with a warning message if I asked you something not related to sport/exercise/training and similar topics
 ";
             var reply = await AskGroq(userMessage);
             ViewBag.GroqResponse = reply;
