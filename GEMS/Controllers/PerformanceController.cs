@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
+using Azure;
 
 namespace GEMS.Controllers
 {
@@ -49,12 +50,20 @@ namespace GEMS.Controllers
                 messages = new[] { new { role = "user", content = prompt } }
             };
 
-            var response = await client.PostAsJsonAsync("https://api.groq.com/openai/v1/chat/completions", requestBody);
-            if (!response.IsSuccessStatusCode)
-                return $"⚠️ Error: {(int)response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
+            try
+            {
+                var response = await client.PostAsJsonAsync("https://api.groq.com/openai/v1/chat/completions", requestBody);
+                if (!response.IsSuccessStatusCode)
+                    return $"⚠️ Error: {(int)response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
 
-            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            return json.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? "";
+                var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+                return json.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString() ?? "";
+            }
+            catch
+            {
+                return $"⚠️ No Internet Connection";
+            }
+           
         }
 
         [HttpGet]
