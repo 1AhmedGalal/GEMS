@@ -27,24 +27,16 @@ tensorflow.keras.preprocessing.sequence.pad_sequences
 -Change Host Port To Your Desired Port
 
 
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
+
+
+
+
+
+
+
+
+
+
 
 [Step 2: Make DB]
 -Make Sure That SQL Server is Installed
@@ -52,24 +44,17 @@ tensorflow.keras.preprocessing.sequence.pad_sequences
 	1) Just Open The .Net Web Application and Update The DB With The Migrations
 	2) Run The Script Found in This Folder
 
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
-|
+
+
+
+
+
+
+
+
+
+
+
 
 [Step 3: Run Front End Web Application]
 ------------------------------------------------------------
