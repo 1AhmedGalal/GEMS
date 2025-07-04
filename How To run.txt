@@ -1,0 +1,89 @@
+[Step 1: Run Python Flask as It Acts as A Server]
+------------------------------------------------------------
+[Step 1.1: Install All Libraries]
+gc
+os
+threading
+time
+tempfile
+base64
+collections.defaultdict
+flask
+flask.request
+flask.jsonify
+flask_cors.CORS
+cv2
+mediapipe
+numpy
+tensorflow.keras.models.load_model
+tensorflow.keras.preprocessing.sequence.pad_sequences
+------------------------------------------------------------
+[Step 1.2: Change File Paths]
+-Model Loading Paths To Your Desired Path
+-Video Saving Path To Your Desired Path
+------------------------------------------------------------
+[Step 1.3: Change Connection Ports]
+-Change Origin Port To Your Desired Port
+-Change Host Port To Your Desired Port
+
+
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+
+[Step 2: Make DB]
+-Make Sure That SQL Server is Installed
+-Then Make The DB With one of two ways:
+	1) Just Open The .Net Web Application and Update The DB With The Migrations
+	2) Run The Script Found in This Folder
+
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+
+[Step 3: Run Front End Web Application]
+------------------------------------------------------------
+[Step 3.1: Install All Needed NuGet Packages]
+Microsoft.VisualStudio.Web.CodeGeneration.Design
+Microsoft.Extensions.Caching.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+Microsoft.AspNetCore.Identity.EntityFrameworkCore
+Microsoft.AspNet.WebApi.Client
+------------------------------------------------------------
+[Step 3.2: Change Paths, Ports, and Keys]
+-Change DB Path to The Path You Just Created
+-Change Key To Groq API
+-Change The Port To The Flask Server
+------------------------------------------------------------
+[Step 3.3: Run Every Thing]
+-Now You Should Have The Whole Prjoect Working :)
