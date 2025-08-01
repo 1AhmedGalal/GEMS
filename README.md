@@ -2,6 +2,10 @@
 
 GEMS is a browser-based fitness assistant that helps users perform exercises safely and effectively using only a webcam and no extra hardware is needed. GEMS helps people by using pose estimation to classify exercises, count correct and incorrect repetitions, and provide real-time feedback.
 
+## Watch Demo
+
+[Click here to watch the demo on YouTube](https://youtu.be/DDTzKsheceo)
+
 ## Features
 
 - Works in the browser using a regular webcam.
